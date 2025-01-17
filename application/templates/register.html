@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<h1>Регистрация</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <div class="ant-form-item">
+        {{ form.username.label }}<br>
+        {{ form.username(class='ant-input', size=32) }}
+    </div>
+
+    <div class="ant-form-item">
+        {{ form.email.label }}<br>
+        {{ form.email(class='ant-input', size=32) }}
+    </div>
+
+    <div class="ant-form-item">
+        {{ form.password.label }}<br>
+        {{ form.password(class='ant-input', size=32) }}
+    </div>
+
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit() }}</button>
+</form>
+
+<a href="{{ url_for('auth.login') }}">Already have an account? Login here.</a>
+{% endblock %}

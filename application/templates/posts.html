@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Список постов{% endblock %}
+
+{% block content %}
+<h1>Список постов</h1>
+
+<a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary">Создать новый пост</a>
+
+<table class="ant-table" style="margin-top: 20px; width: 100%;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Содержимое</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in posts %}
+        <tr>
+            <td>{{ post.id }}</td>
+            <td>{{ post.content_text }}</td>
+            <td>
+                <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
+                <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">Нет доступных постов.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Комментарии {% if post.id %}{{ post.id }}{% endif %}{% endblock %}
+
+{% block content %}
+<h1>Комментарии {{ post.id }}</h1>
+
+<form action="{{ url_for('comments.add_comment', post_id=post.id) }}" method="POST">
+     <textarea name="text" placeholder="Add a comment..." required></textarea><br/>
+     <button type="submit" class="ant-btn ant-btn-primary">Отправить</button><br/>
+</form>
+
+<ul style="list-style-type: none; padding: 0;">
+{% for comment in comments %}
+<li style="margin-bottom: 10px;">
+   {{ comment.text }} 
+   <form action="{{ url_for('comments.delete_comment', post_id=post.id, comment_id=comment.id) }}" method="POST" style="display:inline;">
+       <button type="submit" class="ant-btn ant-btn-danger">Удалить</button></form> | 
+   <a href="{{ url_for('comments.edit_comment', post_id=post.id , comment_id=comment.id ) }}" class="ant-btn ant-btn-link">Edit</a></li>{% endfor %}
+</ul>
+
+<a href="{{ url_for('posts.list_posts') }}" class="ant-btn ant-btn-default">Вернуться к постам</a>  
+{% endblock %}

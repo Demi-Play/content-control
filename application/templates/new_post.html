@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Новая публикация{% endblock %}
+
+{% block content %}
+<h1>Создайте публикацию</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="ant-form-item">
+        {{ form.content_text.label }}<br>{{ form.content_text(class='ant-textarea', cols=30, rows=5) }}
+    </div>
+
+    <div class="ant-form-item">
+        {{ form.file.label }}<br>{{ form.file() }}
+    </div>
+
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit() }}</button>
+</form>
+
+<a href="{{ url_for('posts.list_posts') }}">Назад к постам</a>
+{% endblock %}

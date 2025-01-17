@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактирование комментария {% if post.id %}{{ post.id }}{% endif %}{% endblock %}
+
+{% block content %}
+<h1>Редактировать комментарий к посту {{ post.id }}</h1>
+
+<form action="{{ url_for('comments.edit_comment', post_id=post.id, comment_id=comment.id) }}" method="POST">
+     <textarea name="text" required>{{ comment.text }}</textarea><br/>
+     <button type="submit" class="ant-btn ant-btn-primary">Обновить</button><br/>
+</form>
+
+<a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-default">Отмена</a>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Модерация постов{% endblock %}
+
+{% block content %}
+<h1>Модерация постов</h1>
+
+<table style='width:100%; border-collapse: collapse;'>
+   <tr style='background-color: #f0f0f0;'>
+       <th>Пост ID</th>
+       <th>Контент</th>
+       <th>Статус</th>
+       <th>Действия</th>
+   </tr>
+
+   {% for post in posts %}
+   <tr style='border: 1px solid #ddd;'>
+       <td>{{ post.id }}</td>
+       <td>{{ post.content_text }}</td>
+       <td>{{ 'Active' if post.is_active else 'Inactive' }}</td>
+       <td style='display:flex;'>
+           {% if not post.is_active %}
+           <form action="{{ url_for('moderation.approve_post', post_id=post.id) }}" method='POST'>
+               <button type='submit' class='ant-btn ant-btn-primary'>Одобрить</button></form>{% endif %}
+           <form action="{{ url_for('moderation.reject_post', post_id=post.id) }}" method='POST'>
+               <button type='submit' class='ant-btn ant-btn-danger'>Отклонить</button></form></td></tr>{% endfor %}
+   </table>
+
+<a href="{{ url_for('index') }}" class='ant-btn ant-btn-default'>Вернуться на главную</a>  
+{% endblock %}

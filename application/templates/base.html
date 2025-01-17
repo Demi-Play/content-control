@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Publication Management Platform{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="ant-menu ant-menu-horizontal" style="padding: 0 20px;">
+            <a class="ant-menu-item" href="{{ url_for('index') }}">Home</a>
+            <a class="ant-menu-item" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="ant-menu-item" href="{{ url_for('auth.register') }}">Register</a>
+            <a class="ant-menu-item" href="{{ url_for('posts.list_posts') }}">Posts</a>
+        </nav>
+    </header>
+
+    <div class="content" style="padding: 20px;">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer style="text-align: center; padding: 20px;">
+        <p>© 2025 Анастасия Копейкина. Все права защищены.</p>
+    </footer>
+</body>
+</html>
