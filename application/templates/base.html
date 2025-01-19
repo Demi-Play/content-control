@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Publication Management Platform{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.js"></script>
 </head>
 <body>
@@ -17,7 +18,7 @@
         </nav>
     </header>
 
-    <div class="content" style="padding: 20px;">
+    <div class="content" style="padding: 20px; display: flex; justify-content: center; flex-direction: column;">
         {% block content %}
         {% endblock %}
     </div>

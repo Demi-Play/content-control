@@ -3,36 +3,54 @@
 {% block title %}Список постов{% endblock %}
 
 {% block content %}
-<h1>Список постов</h1>
-
-<a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary">Создать новый пост</a>
-
-<table class="ant-table" style="margin-top: 20px; width: 100%;">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Содержимое</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="site-card-wrapper" style="padding: 20px; display: flex; justify-content: center; flex-direction: column;">
+    <h1>Публикации</h1>
+    <a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary" style="margin-bottom: 20px;">Создать новый пост</a>
+    <div class="ant-row" style="flex-direction: column; align-content: center;">
         {% for post in posts %}
-        <tr>
-            <td>{{ post.id }}</td>
-            <td>{{ post.content_text }}</td>
-            <td>
-                <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
-                <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
-                </form>
-            </td>
-        </tr>
+        <div class="ant-col ant-col-8" style="padding: 10px;">
+            <div class="ant-card" style="width: 100%;">
+                <div class="ant-card-body">
+                    <h3>Пост ID: {{ post.id }}</h3>
+                    <p>{{ post.content_text }}</p>
+                    {% if post.file_path %}
+                    <div class="media-container">
+                        {% if post.file_type == 'image' %}
+                        <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="width: 100%; height: auto;">
+                        {% elif post.file_type == 'video' %}
+                        <video controls style="width: 100%;">
+                            <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div style="margin-top: 10px;">
+                        <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
+                        <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% else %}
-        <tr>
-            <td colspan="3">Нет доступных постов.</td>
-        </tr>
+        <p>Нет доступных постов.</p>
         {% endfor %}
-    </tbody>
-</table>
+    </div>
+</div>
+
+<style>
+    .media-container {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    img, video {
+        display: block;
+        margin: auto;
+    }
+</style>
 
 {% endblock %}

@@ -64,3 +64,18 @@ def edit_post(post_id):
         return redirect(url_for('posts.list_posts'))
     
     return render_template('edit_post.html', form=form)
+
+@posts_bp.route('/post/<int:post_id>/delete', methods=['POST'])
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    if post.user_id != session.get('user_id'):
+        flash('You do not have permission to delete this post.')
+        return redirect(url_for('posts.list_posts'))
+
+    post.is_active = False  # Логическое удаление поста
+    
+    db.session.commit()
+    
+    flash('Post deleted successfully!')
+    return redirect(url_for('posts.list_posts'))
