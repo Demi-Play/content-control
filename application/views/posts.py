@@ -5,7 +5,9 @@ from sqlalchemy.orm import joinedload
 from application.decorators import login_required
 from ..models import Like, db, Post, Comment
 from ..forms import PostForm
-from ..app import app
+from ..app import app, transliterate_filename
+from werkzeug.utils import secure_filename
+
 
 posts_bp = Blueprint('posts', __name__)
 
@@ -19,20 +21,25 @@ def list_posts():
 def new_post():
     form = PostForm()
     
+    
     if form.validate_on_submit():
+        
         content_text = form.content_text.data
         
         # Обработка загрузки файла
         file_path = None
+        new_filename = None  # Инициализация переменной
+        
         if form.file.data:
             file_path = secure_filename(form.file.data.filename)  # Безопасное имя файла
             
+            new_filename = transliterate_filename(file_path)
             # Сохраняем файл в папку uploads (необходимо создать эту папку заранее!)
-            form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], file_path))
+            form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
         
         new_post = Post(user_id=session['user_id'], content_text=content_text,
-                        file_path=file_path,
-                        file_type='image' if file_path and file_path.endswith(('png', 'jpg')) else 'video')
+                        file_path=new_filename,
+                        file_type='image' if file_path and file_path.endswith(('png', 'jpg', 'jpeg')) else 'video')
         
         db.session.add(new_post)
         db.session.commit()
@@ -58,9 +65,16 @@ def edit_post(post_id):
         
         # Обработка загрузки нового файла (если есть)
         if form.file.data:
-            file_path_new_file_name= secure_filename(form.file.data.filename)  
-            form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], file_path_new_file_name))
-            post.file_path=file_path_new_file_name
+            file_path_new_file_name= secure_filename(form.file.data.filename)
+            new_filename = transliterate_filename(file_path_new_file_name)
+            
+            form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
+            post.file_path=new_filename
+             
+            if new_filename and new_filename.endswith(('png', 'jpg', 'jpeg')):
+                post.file_type='image'
+            else: 
+                post.file_type = 'video'
         
         db.session.commit()
         

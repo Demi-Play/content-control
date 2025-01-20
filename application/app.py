@@ -1,9 +1,20 @@
+import os
 from flask import Flask, render_template
 from .config import Config
 from .models import db
+from transliterate import translit
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object(Config)
+
+def transliterate_filename(filename):
+    # Удаляем пробелы и расширение
+    name, ext = os.path.splitext(filename)
+    # Транслитерируем имя файла
+    transliterated_name = translit(name, 'ru', reversed=True)
+    # Формируем новое имя файла
+    new_filename = f"{transliterated_name}.{ext}"
+    return new_filename
 
 # Инициализация базы данных
 db.init_app(app)

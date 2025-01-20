@@ -3,10 +3,10 @@
 {% block title %}Список постов{% endblock %}
 
 {% block content %}
-<div class="site-card-wrapper" style="padding: 20px; display: flex; justify-content: center; flex-direction: column;">
+<div class="site-card-wrapper" style="padding: 20px;">
     <h1>Публикации</h1>
     <a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary" style="margin-bottom: 20px;">Создать новый пост</a>
-    <div class="ant-row" style="flex-direction: column; align-content: center;">
+    <div class="ant-row" style="display: flex; flex-wrap: wrap; justify-content: center;">
         {% for post in posts %}
         <div class="ant-col ant-col-8" style="padding: 10px;">
             <div class="ant-card" style="width: 100%;">
@@ -32,7 +32,8 @@
                         </form>
                         
                         <!-- Счетчик комментариев -->
-                        <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link">Комментарии {{ post.comments|length }} 💬 </a>
+                        <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link">Комментарии {{ post.comments|length }} 💬</a>
+                    </div>
                     <div style="margin-top: 10px;">
                         {% if post.user_id == session.get('user_id') %}
                         <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
@@ -41,13 +42,14 @@
                         </form>
                         {% endif %}
                     </div>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <p>Нет доступных постов.</p>
+                </div> <!-- Закрывающий тег для ant-card-body -->
+            </div> <!-- Закрывающий тег для ant-card -->
+        </div> <!-- Закрывающий тег для ant-col -->
         {% endfor %}
-    </div>
+        {% if posts|length == 0 %}
+        <p>Нет доступных постов.</p>
+        {% endif %}
+    </div> <!-- Закрывающий тег для ant-row -->
 </div>
 
 <style>
