@@ -11,10 +11,20 @@
 <body>
     <header>
         <nav class="ant-menu ant-menu-horizontal" style="padding: 0 20px;">
-            <a class="ant-menu-item" href="{{ url_for('index') }}">Home</a>
-            <a class="ant-menu-item" href="{{ url_for('auth.login') }}">Login</a>
-            <a class="ant-menu-item" href="{{ url_for('auth.register') }}">Register</a>
-            <a class="ant-menu-item" href="{{ url_for('posts.list_posts') }}">Posts</a>
+            <a class="ant-menu-item" href="{{ url_for('index') }}">Главная</a>
+            <a class="ant-menu-item" href="{{ url_for('posts.list_posts') }}">Публикации</a>
+            {% if 'user_id' not in session %}
+            <a class="ant-menu-item" href="{{ url_for('auth.login') }}">Вход</a>
+            <a class="ant-menu-item" href="{{ url_for('auth.register') }}">Регистрация</a>
+            {% else %}
+            <a class="ant-menu-item" href="{{ url_for('auth.profile', user_id=session['user_id']) }}">Профиль</a>
+            <a class="ant-menu-item" href="{{ url_for('auth.logout') }}">Выход</a>
+            {% endif %}
+            {% if 'user_id' in session and session.get('role') == 'moderator' %}
+            <a class="ant-menu-item" href="{{ url_for('moderation.moderate_posts') }}">Модерация</a>
+            {% elif 'user_id' in session and session.get('role') == 'admin' %}
+            <a class="ant-menu-item" href="{{ url_for('admin.list_users') }}">Админпанель</a>
+            {% endif %}
         </nav>
     </header>
 
@@ -26,5 +36,17 @@
     <footer style="text-align: center; padding: 20px;">
         <p>© 2025 Анастасия Копейкина. Все права защищены.</p>
     </footer>
+
+    <style>
+        nav {
+            position: fixed; /* Фиксируем панель */
+        top: 0; /* Прижимаем к верху */
+        width: 100%; /* Растягиваем на всю ширину */
+        z-index: 1000; /* Устанавливаем высокий z-index, чтобы панель была над другим контентом */
+        }
+        .content {
+            margin-top: 30px;
+        }
+    </style>
 </body>
 </html>

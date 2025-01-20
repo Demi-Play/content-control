@@ -11,7 +11,7 @@
         <div class="ant-col ant-col-8" style="padding: 10px;">
             <div class="ant-card" style="width: 100%;">
                 <div class="ant-card-body">
-                    <h3>Пост ID: {{ post.id }}</h3>
+                    <h3>Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}">{{ post.author.username }}</a></h3>
                     <p>{{ post.content_text }}</p>
                     {% if post.file_path %}
                     <div class="media-container">
@@ -26,10 +26,20 @@
                     </div>
                     {% endif %}
                     <div style="margin-top: 10px;">
+                        <!-- Счетчик лайков -->
+                        <form action="{{ url_for('likes.like_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="ant-btn ant-btn-link">Лайки 👍 {{ post.likes|length }}</button>
+                        </form>
+                        
+                        <!-- Счетчик комментариев -->
+                        <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link">Комментарии {{ post.comments|length }} 💬 </a>
+                    <div style="margin-top: 10px;">
+                        {% if post.user_id == session.get('user_id') %}
                         <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
                         <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
                             <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
                         </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -50,6 +60,9 @@
     img, video {
         display: block;
         margin: auto;
+    }
+    .ant-card {
+        min-width: 360px;
     }
 </style>
 

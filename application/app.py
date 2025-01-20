@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from .config import Config
 from .models import db
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object(Config)
 
 # Инициализация базы данных
@@ -15,14 +15,19 @@ with app.app_context():
 # Импортировать views после инициализации приложения
 from .views.auth import auth_bp
 from .views.posts import posts_bp
+from .views.likes import likes_bp
 from .views.comments import comments_bp
 from .views.moderation import moderation_bp
+from .views.admin import admin_bp
 
 # Регистрация блюпринтов (blueprints)
 app.register_blueprint(auth_bp)
 app.register_blueprint(posts_bp)
+app.register_blueprint(likes_bp)
 app.register_blueprint(comments_bp)
 app.register_blueprint(moderation_bp)
+app.register_blueprint(admin_bp)
+
 
 @app.route('/')
 def index():

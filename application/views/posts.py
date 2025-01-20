@@ -1,7 +1,9 @@
 import os
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from werkzeug.utils import secure_filename
-from ..models import db, Post
+from sqlalchemy.orm import joinedload
+from application.decorators import login_required
+from ..models import Like, db, Post, Comment
 from ..forms import PostForm
 from ..app import app
 
@@ -9,10 +11,11 @@ posts_bp = Blueprint('posts', __name__)
 
 @posts_bp.route('/posts', methods=['GET'])
 def list_posts():
-    posts = Post.query.filter_by(is_active=True).all()
+    posts = Post.query.options(joinedload(Post.author)).filter_by(is_active=True).all()
     return render_template('posts.html', posts=posts)
 
 @posts_bp.route('/post/new', methods=['GET', 'POST'])
+@login_required
 def new_post():
     form = PostForm()
     
@@ -34,17 +37,18 @@ def new_post():
         db.session.add(new_post)
         db.session.commit()
         
-        flash('Post created successfully!')
+        flash('Публикация успешно создана!')
         return redirect(url_for('posts.list_posts'))
     
     return render_template('new_post.html', form=form)
 
 @posts_bp.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
     
     if post.user_id != session.get('user_id'):
-        flash('You do not have permission to edit this post.')
+        flash('У вас нет необходимых разрешений для изменения данной публикации.')
         return redirect(url_for('posts.list_posts'))
 
     form = PostForm(obj=post)  # Заполняем форму данными поста
@@ -60,22 +64,34 @@ def edit_post(post_id):
         
         db.session.commit()
         
-        flash('Post updated successfully!')
+        flash('Публикация успешно обновлена!')
         return redirect(url_for('posts.list_posts'))
     
     return render_template('edit_post.html', form=form)
 
 @posts_bp.route('/post/<int:post_id>/delete', methods=['POST'])
+@login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     
     if post.user_id != session.get('user_id'):
-        flash('You do not have permission to delete this post.')
+        flash('У вас нет необходимых разрешений для удаления данной публикации.')
         return redirect(url_for('posts.list_posts'))
+    else:
+        comments = Comment.query.filter_by(post_id=post.id).all()
+        for comment in comments:
+            db.session.delete(comment)
+
+        # Удаляем лайки к посту
+        likes = Like.query.filter_by(post_id=post.id).all()
+        for like in likes:
+            db.session.delete(like)
+        db.session.delete(post)
+        
 
     post.is_active = False  # Логическое удаление поста
     
     db.session.commit()
     
-    flash('Post deleted successfully!')
+    flash('Публикация успешно удалена!')
     return redirect(url_for('posts.list_posts'))

@@ -3,26 +3,36 @@ from wtforms import StringField, PasswordField, TextAreaField, SubmitField, Bool
 from wtforms.validators import DataRequired, Email, Length
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=150)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Sign Up')
+    username = StringField('Имя пользователя', validators=[DataRequired(), Length(min=2, max=150)])
+    email = StringField('Почта', validators=[DataRequired(), Email()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    submit = SubmitField('Зарегистрироваться')
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Sign In')
+    username = StringField('Имя пользователя', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    remember_me = BooleanField('Запомнить меня')
+    submit = SubmitField('Войти')
 
 class PostForm(FlaskForm):
-    content_text = TextAreaField('Content', validators=[DataRequired()])
-    file = FileField('Upload File')
-    submit = SubmitField('Create Post')
+    content_text = TextAreaField('Контент', validators=[DataRequired()])
+    file = FileField('Загрузить файл')
+    submit = SubmitField('Отправить')
 
 class CommentForm(FlaskForm):
-    text = TextAreaField('Comment', validators=[DataRequired()])
-    submit = SubmitField('Add Comment')
+    text = TextAreaField('Комментарий', validators=[DataRequired()])
+    submit = SubmitField('Отправить')
 
 class ModerationForm(FlaskForm):
-    status = SelectField('Status', choices=[('approved', 'Approve'), ('rejected', 'Reject')], validators=[DataRequired()])
-    submit = SubmitField('Update Status')
+    status = SelectField('Статус', choices=[('approved', 'Approve'), ('rejected', 'Reject')], validators=[DataRequired()])
+    submit = SubmitField('Обновить статус')
+    
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, SelectField
+from wtforms.validators import DataRequired, Email
+
+class UserEditForm(FlaskForm):
+    username = StringField('Имя пользователя', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    role = SelectField('Роль', choices=[('user', 'Пользователь'), ('moderator', 'Модератор'), ('admin', 'Администратор')], validators=[DataRequired()])
+    submit = SubmitField('Сохранить изменения')

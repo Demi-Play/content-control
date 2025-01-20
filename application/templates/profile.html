@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя: {{ user.username }}{% endblock %}
+
+{% block content %}
+<h1>Профиль пользователя: {{ user.username }}</h1>
+<p>Email: {{ user.email }}</p>
+
+<h2>Посты пользователя</h2>
+<div class="ant-row">
+    {% for post in posts %}
+    <div class="ant-col ant-col-8" style="padding: 10px;">
+        <div class="ant-card" style="width: 100%;">
+            <div class="ant-card-body">
+                <h3>Пост ID: {{ post.id }}</h3>
+                <p>{{ post.content_text }}</p>
+                {% if post.file_path %}
+                <div class="media-container">
+                    {% if post.file_type == 'image' %}
+                    <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="width: 100%; height: auto;">
+                    {% elif post.file_type == 'video' %}
+                    <video controls style="width: 100%;">
+                        <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <!-- Счетчик лайков -->
+                <span>👍 {{ post.likes|length }}</span>
+
+                <!-- Счетчик комментариев -->
+                <span>💬 {{ post.comments|length }}</span>
+                <div style="margin-top: 10px;">
+                {% if post.user_id == session.get('user_id') %}
+                <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
+                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>Нет доступных постов.</p>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+{% endblock %}

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..models import db, User
+from ..models import Post, db, User
 from ..forms import RegistrationForm, LoginForm
 
 auth_bp = Blueprint('auth', __name__)
@@ -41,6 +41,7 @@ def login():
         
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id  # Сохраняем ID пользователя в сессии
+            session['role'] = user.role  # Сохраняем Role пользователя в сессии
             flash('Login successful!')
             return redirect(url_for('index'))
         
@@ -53,3 +54,9 @@ def logout():
     session.pop('user_id', None)  # Удаляем ID пользователя из сессии
     flash('You have been logged out.')
     return redirect(url_for('index'))
+
+@auth_bp.route('/profile/<int:user_id>', methods=['GET'])
+def profile(user_id):
+    user = User.query.get_or_404(user_id)
+    posts = Post.query.filter_by(user_id=user.id).all()  # Получаем все посты пользователя
+    return render_template('profile.html', user=user, posts=posts)
