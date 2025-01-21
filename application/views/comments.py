@@ -1,5 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, flash, request, render_template
-from ..models import db, Comment, Post
+
+from application.content_analysis import ContentModerator
+from ..models import ModerationLog, db, Comment, Post
 from ..forms import CommentForm
 
 comments_bp = Blueprint('comments', __name__)
@@ -18,22 +20,53 @@ def add_comment(post_id):
 
     text = request.form.get("text")
     
-    new_comment = Comment(post_id=post_id, user_id=session['user_id'], text=text)
+    # Инициализация модератора контента
+    moderator = ContentModerator()
+    
+    # Проверка комментария
+    if moderator.moderate_comment(text):
+        # Если комментарий не прошел модерацию
+        flash("Комментарий содержит неприемлемый контент и был заблокирован.")
+        return redirect(url_for('posts.list_posts'))
+    
+    # Если комментарий прошел модерацию
+    new_comment = Comment(
+        post_id=post_id, 
+        user_id=session['user_id'], 
+        text=text
+    )
     
     db.session.add(new_comment)
     db.session.commit()
     
     flash("Комментарий добавлен!")
-    
     return redirect(url_for("comments.list_comments", post_id=post_id))
 
 @comments_bp.route('/post/<int:post_id>/comment/<int:comment_id>/edit', methods=['GET', 'POST'])
 def edit_comment(post_id, comment_id):
     comment = Comment.query.get_or_404(comment_id)
+    
+    # Проверка прав доступа к редактированию комментария
+    if comment.user_id != session.get('user_id'):
+        flash('У вас нет прав для редактирования этого комментария.')
+        return redirect(url_for("comments.list_comments", post_id=post_id))
 
     if request.method == 'POST':
-        comment.text = request.form.get("text")
+        new_text = request.form.get("text")
+        
+        # Инициализация модератора контента
+        moderator = ContentModerator()
+        
+        # Проверка нового текста комментария
+        if moderator.moderate_comment(new_text):
+            # Если комментарий не прошел модерацию
+            flash("Комментарий содержит неприемлемый контент и был заблокирован.")
+            return redirect(url_for('posts.list_posts'))
+            
+        # Если комментарий прошел модерацию
+        comment.text = new_text
         db.session.commit()
+        
         flash("Комментарий обновлён!")
         return redirect(url_for("comments.list_comments", post_id=post_id))
 

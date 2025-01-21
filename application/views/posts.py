@@ -2,6 +2,7 @@ import os
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
+from application.content_analysis import ContentModerator
 from application.decorators import login_required
 from ..models import Like, db, Post, Comment
 from ..forms import PostForm
@@ -21,10 +22,17 @@ def list_posts():
 def new_post():
     form = PostForm()
     
+    # Инициализация модератора контента
+    moderator = ContentModerator()
     
     if form.validate_on_submit():
-        
         content_text = form.content_text.data
+        
+        # Проверка текста поста
+        if moderator.moderate_comment(content_text):
+            # Если пост не прошел модерацию
+            flash('Публикация содержит неприемлемый контент.')
+            return redirect(url_for('posts.list_posts'))
         
         # Обработка загрузки файла
         file_path = None
@@ -34,12 +42,16 @@ def new_post():
             file_path = secure_filename(form.file.data.filename)  # Безопасное имя файла
             
             new_filename = transliterate_filename(file_path)
-            # Сохраняем файл в папку uploads (необходимо создать эту папку заранее!)
+            # Сохраняем файл в папку uploads
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
         
-        new_post = Post(user_id=session['user_id'], content_text=content_text,
-                        file_path=new_filename,
-                        file_type='image' if file_path and file_path.endswith(('png', 'jpg', 'jpeg')) else 'video')
+        new_post = Post(
+            user_id=session['user_id'], 
+            content_text=content_text,
+            file_path=new_filename,
+            file_type='image' if file_path and file_path.endswith(('png', 'jpg', 'jpeg')) else 'video',
+            is_active=True  # По умолчанию пост активен
+        )
         
         db.session.add(new_post)
         db.session.commit()
@@ -60,19 +72,31 @@ def edit_post(post_id):
 
     form = PostForm(obj=post)  # Заполняем форму данными поста
     
+    # Инициализация модератора контента
+    moderator = ContentModerator()
+    
     if form.validate_on_submit():
+        # Проверка текста поста
+        if moderator.moderate_comment(form.content_text.data):
+            # Если пост не прошел модерацию
+            post.is_active = False
+            db.session.commit()
+            
+            flash('Публикация содержит неприемлемый контент и была деактивирована.')
+            return redirect(url_for('posts.list_posts'))
+        
         post.content_text = form.content_text.data
         
         # Обработка загрузки нового файла (если есть)
         if form.file.data:
-            file_path_new_file_name= secure_filename(form.file.data.filename)
+            file_path_new_file_name = secure_filename(form.file.data.filename)
             new_filename = transliterate_filename(file_path_new_file_name)
             
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
-            post.file_path=new_filename
-             
+            post.file_path = new_filename
+            
             if new_filename and new_filename.endswith(('png', 'jpg', 'jpeg')):
-                post.file_type='image'
+                post.file_type = 'image'
             else: 
                 post.file_type = 'video'
         

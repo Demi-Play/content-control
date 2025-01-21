@@ -59,7 +59,7 @@ class ModerationLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     status = db.Column(db.String(50), nullable=False)  # Статус проверки (например: 'approved', 'rejected')
-    
+    reason = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
