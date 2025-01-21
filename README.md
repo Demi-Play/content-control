@@ -28,13 +28,13 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone https://github.com/your_username/content-management-platform.git
-cd content-management-platform
+git clone https://github.com/Demi-Play/content-control.git
+cd content-control
 ```
 
 ### 2. Создание виртуального окружения
-```bash
 Для Windows
+```bash
 python -m venv venv
 venv\Scripts\activate
 ```
