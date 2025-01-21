@@ -49,7 +49,7 @@ def new_post():
             user_id=session['user_id'], 
             content_text=content_text,
             file_path=new_filename,
-            file_type='image' if file_path and file_path.endswith(('png', 'jpg', 'jpeg')) else 'video',
+            file_type='image',
             is_active=True  # По умолчанию пост активен
         )
         
@@ -95,10 +95,7 @@ def edit_post(post_id):
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
             post.file_path = new_filename
             
-            if new_filename and new_filename.endswith(('png', 'jpg', 'jpeg')):
-                post.file_type = 'image'
-            else: 
-                post.file_type = 'video'
+            post.file_type = 'image'
         
         db.session.commit()
         

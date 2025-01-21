@@ -22,8 +22,8 @@
         {{ form.password(class='ant-input', size=32) }}
     </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit() }}</button>
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
 </form>
 
-<a href="{{ url_for('auth.login') }}">Already have an account? Login here.</a>
+<a href="{{ url_for('auth.login') }}">У вас уже есть профиль? Войдите через него.</a>
 {% endblock %}

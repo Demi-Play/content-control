@@ -21,7 +21,7 @@
         {{ form.remember_me() }} {{ form.remember_me.label }}
     </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit() }}</button>
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
 </form>
 
 <a href="{{ url_for('auth.register') }}">Еще нет аккаунта? Создайте его скорее.</a>

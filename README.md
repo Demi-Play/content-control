@@ -50,6 +50,7 @@ pip install -r requirements.txt
 
 ```bash
 python -m spacy download ru_core_news_sm
+python -m spacy download ru_core_news_md
 ```
 
 Установка моделей
@@ -57,3 +58,10 @@ python -m spacy download ru_core_news_sm
 ```bash
 pip install textblob
 ```
+
+### 5. Запуск приложения
+Перейдите в каталог с файлом run.py и запустите его через терминал следующим образом: 
+```bash
+python run.py
+```
+

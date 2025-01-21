@@ -63,6 +63,7 @@
             align-items: center;
         "
     >
+        {% if 'user_id' in session %}
         <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <div 
@@ -107,6 +108,7 @@
                 </button>
             </div>
         </div>
+        {% endif %}
     </div>
 
     <div class="content" style="padding: 20px; display: flex; justify-content: center; flex-direction: column; margin-top: 64px;">
