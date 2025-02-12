@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}Восстановление пароля{% endblock %}
 
 {% block content %}
-<h1>Вход</h1>
+<h1>Восстановление пароля</h1>
 <form method="POST">
     {{ form.hidden_tag() }}
     
+    <div class="ant-form-item">
+        {{ form.email.label }}<br>
+        {{ form.email(class='ant-input', size=32) }}
+    </div>
+
     <div class="ant-form-item">
         {{ form.username.label }}<br>
         {{ form.username(class='ant-input', size=32) }}
@@ -17,13 +22,8 @@
         {{ form.password(class='ant-input', size=32) }}
     </div>
 
-    <div class="ant-form-item">
-        {{ form.remember_me() }} {{ form.remember_me.label }}
-    </div>
-
     <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
 </form>
 
-<a href="{{ url_for('auth.register') }}">Еще нет аккаунта? Создайте его скорее.</a>
-<a href="{{ url_for('auth.forget_pass') }}" style="color: brown;">Забыли пароль?</a>
+<a href="{{ url_for('auth.login') }}">Вспомнили пароль? - Войдите.</a>
 {% endblock %}

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models import Post, db, User
-from ..forms import RegistrationForm, LoginForm
+from ..forms import RegistrationForm, LoginForm, ResetPasswordForm
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -60,3 +60,29 @@ def profile(user_id):
     user = User.query.get_or_404(user_id)
     posts = Post.query.filter_by(user_id=user.id).all()  # Получаем все посты пользователя
     return render_template('profile.html', user=user, posts=posts)
+
+@auth_bp.route('/forget_pass', methods=['GET', 'POST'])
+def forget_pass():
+    form = ResetPasswordForm()
+    
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data, email=form.email.data).first()
+        
+        if user:
+            try:
+                new_hashed_password = generate_password_hash(form.password.data)
+                user.password_hash = new_hashed_password
+                
+                db.session.commit()
+                
+                flash("Пароль успешно изменён.", "success")
+                return redirect(url_for("login"))
+            
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Ошибка при изменении пароля: {e}", "danger")
+        
+        else:
+            flash('Некорректные данные пользователя', 'danger')
+    
+    return render_template('forget_pass.html', form=form)
