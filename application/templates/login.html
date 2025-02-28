@@ -3,6 +3,8 @@
 {% block title %}Вход{% endblock %}
 
 {% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
 <h1>Вход</h1>
 <form method="POST">
     {{ form.hidden_tag() }}
@@ -26,4 +28,5 @@
 
 <a href="{{ url_for('auth.register') }}">Еще нет аккаунта? Создайте его скорее.</a>
 <a href="{{ url_for('auth.forget_pass') }}" style="color: brown;">Забыли пароль?</a>
+</div>
 {% endblock %}

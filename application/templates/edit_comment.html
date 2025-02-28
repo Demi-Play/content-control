@@ -3,6 +3,8 @@
 {% block title %}Редактирование комментария {% if post.id %}{{ post.id }}{% endif %}{% endblock %}
 
 {% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
 <h1>Редактировать комментарий к посту {{ post.id }}</h1>
 
 <form action="{{ url_for('comments.edit_comment', post_id=post.id, comment_id=comment.id) }}" method="POST">
@@ -11,4 +13,5 @@
 </form>
 
 <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-default">Отмена</a>
+</div>
 {% endblock %}

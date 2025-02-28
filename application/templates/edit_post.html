@@ -3,21 +3,24 @@
 {% block title %}Редактирование поста{% endblock %}
 
 {% block content %}
-<h1>Измените содержимое публикации</h1>
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
 
-<form method="POST" enctype="multipart/form-data">
+<h1 style="text-align: center;">Измените содержимое публикации</h1>
+
+<form class="ant-form" method="POST" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
     <div class="ant-form-item">
-        {{ form.content_text.label }}<br>{{ form.content_text(class='ant-textarea', cols=30, rows=5) }}
+        {{ form.content_text.label }}<br>{{ form.content_text(class='ant-input', cols=30, rows=5) }}
     </div>
 
     <div class="ant-form-item">
-        {{ form.file.label }}<br>{{ form.file() }}
+        {{ form.file.label }}<br>{{ form.file(class='ant-input') }}
     </div>
 
-        {{ form.submit() }}
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
 </form>
 
-<a href="{{ url_for('posts.list_posts') }}">отмена</a>
+<a href="{{ url_for('posts.list_posts') }}" class="ant-btn ant-btn-default">Отмена</a>
+</div>
 {% endblock %}

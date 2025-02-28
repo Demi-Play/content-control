@@ -3,6 +3,8 @@
 {% block title %}Новая публикация{% endblock %}
 
 {% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
 <h1>Создайте публикацию</h1>
 
 <form method="POST" enctype="multipart/form-data">
@@ -20,4 +22,5 @@
 </form>
 
 <a href="{{ url_for('posts.list_posts') }}">Назад к постам</a>
+</div>
 {% endblock %}

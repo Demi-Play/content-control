@@ -3,7 +3,9 @@
 {% block title %}Комментарии для поста {{ post.id }}{% endblock %}
 
 {% block content %}
-<h1>Комментарии для поста {{ post.id }}</h1>
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
+<h1>Комментарии для поста к текущему посту</h1>
 
 <form action="{{ url_for('comments.add_comment', post_id=post.id) }}" method="POST">
     <textarea name="text" placeholder="Добавьте комментарий..." required></textarea><br/>
@@ -23,4 +25,5 @@
 </ul>
 
 <a href="{{ url_for('posts.list_posts') }}" class="ant-btn ant-btn-default">Назад к постам</a>
+</div>
 {% endblock %}

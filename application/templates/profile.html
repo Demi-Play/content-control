@@ -3,6 +3,8 @@
 {% block title %}Профиль пользователя: {{ user.username }}{% endblock %}
 
 {% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
 <h1>Профиль пользователя: {{ user.username }}</h1>
 <p>Email: {{ user.email }}</p>
 
@@ -48,4 +50,5 @@
 </div>
 
 <a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+</div>
 {% endblock %}

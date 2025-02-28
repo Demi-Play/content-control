@@ -1,72 +1,74 @@
 {% extends 'base.html' %}
 
-{% block title %}Список постов{% endblock %}
+{% block title %}
+  Список постов
+{% endblock %}
 
 {% block content %}
-
-<div class="site-card-wrapper" style="padding: 20px; ">
+  <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
     <h1>Публикации</h1>
     <a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary" style="margin-bottom: 20px;">Создать новый пост</a>
-    <div class="ant-row" style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <div class="site-card-wrapper" style="padding: 20px; ">
+      <div class="ant-row" style="display: flex; flex-wrap: wrap; justify-content: center;">
         {% for post in posts %}
-        <div class="ant-col ant-col-8" style="padding: 10px;">
+          <div class="ant-col ant-col-8" style="padding: 10px;">
             <div class="ant-card" style="width: 100%;">
-                <div class="ant-card-body">
-                    <h3>Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}">{{ post.author.username }}</a></h3>
-                    <p>{{ post.content_text }}</p>
-                    {% if post.file_path %}
-                    <div class="media-container">
-                        {% if post.file_type == 'image' %}
-                        <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="width: 100%; height: auto;">
-                        {% elif post.file_type == 'video' %}
-                        <video controls style="width: 100%;">
-                            <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4">
-                            Ваш браузер не поддерживает видео.
-                        </video>
-                        {% endif %}
-                    </div>
+              <div class="ant-card-body">
+                <h3>Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}">{{ post.author.username }}</a></h3>
+                <p>{{ post.content_text }}</p>
+                {% if post.file_path %}
+                  <div class="media-container">
+                    {% if post.file_type == 'image' %}
+                      <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="width: 100%; height: auto;" />
+                    {% elif post.file_type == 'video' %}
+                      <video controls style="width: 100%;">
+                        <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4" />Ваш браузер не поддерживает видео.
+                      </video>
                     {% endif %}
-                    <div style="margin-top: 10px;">
-                        <!-- Счетчик лайков -->
-                        <form action="{{ url_for('likes.like_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="ant-btn ant-btn-link">Лайки 👍 {{ post.likes|length }}</button>
-                        </form>
-                        
-                        <!-- Счетчик комментариев -->
-                        <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link">Комментарии {{ post.comments|length }} 💬</a>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        {% if post.user_id == session.get('user_id') %}
-                        <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
-                        <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
-                        </form>
-                        {% endif %}
-                    </div>
-                </div> <!-- Закрывающий тег для ant-card-body -->
+                  </div>
+                {% endif %}
+                <div style="margin-top: 10px;">
+                  <!-- Счетчик лайков -->
+                  <form action="{{ url_for('likes.like_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="ant-btn ant-btn-link">Лайки 👍 {{ post.likes|length }}</button>
+                  </form>
+
+                  <!-- Счетчик комментариев -->
+                  <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link">Комментарии {{ post.comments|length }} 💬</a>
+                </div>
+                <div style="margin-top: 10px;">
+                  {% if post.user_id == session.get('user_id') %}
+                    <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
+                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                      <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div> <!-- Закрывающий тег для ant-card-body -->
             </div> <!-- Закрывающий тег для ant-card -->
-        </div> <!-- Закрывающий тег для ant-col -->
+          </div> <!-- Закрывающий тег для ant-col -->
         {% endfor %}
         {% if posts|length == 0 %}
-        <p>Нет доступных постов.</p>
+          <p>Нет доступных постов.</p>
         {% endif %}
-    </div> <!-- Закрывающий тег для ant-row -->
-</div>
+      </div> <!-- Закрывающий тег для ant-row -->
+    </div>
+  </div>
 
-<style>
+  <style>
     .media-container {
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-        height: auto;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      height: auto;
     }
-    img, video {
-        display: block;
-        margin: auto;
+    img,
+    video {
+      display: block;
+      margin: auto;
     }
     .ant-card {
-        min-width: 360px;
+      min-width: 360px;
     }
-</style>
-
+  </style>
 {% endblock %}

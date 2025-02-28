@@ -3,6 +3,8 @@
 {% block title %}Редактирование пользователя: {{ user.username }}{% endblock %}
 
 {% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
 <h1>Редактирование пользователя: {{ user.username }}</h1>
 
 <form method="POST">
@@ -23,9 +25,10 @@
         {{ form.role(class='ant-select') }}
     </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit() }}</button>
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
 </form>
 
 <a href="{{ url_for('admin.list_users') }}" class="ant-btn ant-btn-default">Назад к списку пользователей</a>
 
+</div>
 {% endblock %}

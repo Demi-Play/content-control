@@ -3,6 +3,8 @@
 {% block title %}Управление пользователями{% endblock %}
 
 {% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
 <h1>Список пользователей</h1>
 <table class="ant-table">
     <thead>
@@ -35,8 +37,18 @@
 <style>
     table {
         text-align: left;
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #ddd;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
     }
 </style>
 
 <a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+
+</div>
 {% endblock %}
