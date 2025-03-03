@@ -8,7 +8,7 @@ from ..models import Like, db, Post, Comment
 from ..forms import PostForm
 from ..app import app, transliterate_filename
 from werkzeug.utils import secure_filename
-
+from flask_login import current_user
 
 posts_bp = Blueprint('posts', __name__)
 
@@ -46,7 +46,7 @@ def new_post():
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
         
         new_post = Post(
-            user_id=session['user_id'], 
+            user_id=current_user.id, 
             content_text=content_text,
             file_path=new_filename,
             file_type='image',
@@ -66,7 +66,7 @@ def new_post():
 def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
     
-    if post.user_id != session.get('user_id'):
+    if post.user_id != current_user.id:
         flash('У вас нет необходимых разрешений для изменения данной публикации.')
         return redirect(url_for('posts.list_posts'))
 
@@ -109,7 +109,7 @@ def edit_post(post_id):
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     
-    if post.user_id != session.get('user_id'):
+    if post.user_id != current_user.id:
         flash('У вас нет необходимых разрешений для удаления данной публикации.')
         return redirect(url_for('posts.list_posts'))
     else:

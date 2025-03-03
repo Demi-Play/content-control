@@ -17,7 +17,7 @@ def moderate_posts():
 def approve_post(post_id): 
     post=Post.query.get_or_404(post_id) 
     
-    log_entry=ModerationLog(post_id=post.id,status="approved") 
+    log_entry=ModerationLog(post_id=post.id, status="approved") 
     
     post.is_active=True # Устанавливаем статус поста как активный 
     

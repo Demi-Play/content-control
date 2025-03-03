@@ -18,7 +18,7 @@
         {{ form.file.label }}<br>{{ form.file() }}
     </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit() }}</button>
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
 </form>
 
 <a href="{{ url_for('posts.list_posts') }}">Назад к постам</a>

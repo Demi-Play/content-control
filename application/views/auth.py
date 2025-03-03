@@ -2,6 +2,16 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models import Post, db, User
 from ..forms import RegistrationForm, LoginForm, ResetPasswordForm
+import logging
+from flask_login import login_user, logout_user, current_user
+from ..app import login_manager
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -24,8 +34,16 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         
+        # Log successful registration
+        logger.info(f"User {username} registered successfully.")
+        
+        # Log in the user after registration
+        login_user(new_user)
         flash('Registration successful! You can now log in.')
         return redirect(url_for('auth.login'))
+    
+    # Log validation errors
+    logger.error(f"Validation errors: {form.errors}")
     
     return render_template('register.html', form=form)
 
@@ -40,8 +58,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and check_password_hash(user.password_hash, password):
-            session['user_id'] = user.id  # Сохраняем ID пользователя в сессии
-            session['role'] = user.role  # Сохраняем Role пользователя в сессии
+            login_user(user)  # Log in the user
             flash('Login successful!')
             return redirect(url_for('index'))
         
@@ -51,13 +68,13 @@ def login():
 
 @auth_bp.route('/logout')
 def logout():
-    session.pop('user_id', None)  # Удаляем ID пользователя из сессии
+    logout_user()  # Log out the user
     flash('You have been logged out.')
     return redirect(url_for('index'))
 
-@auth_bp.route('/profile/<int:user_id>', methods=['GET'])
-def profile(user_id):
-    user = User.query.get_or_404(user_id)
+@auth_bp.route('/profile', methods=['GET'])
+def profile():
+    user = User.query.get_or_404(current_user.id)
     posts = Post.query.filter_by(user_id=user.id).all()  # Получаем все посты пользователя
     return render_template('profile.html', user=user, posts=posts)
 

@@ -8,19 +8,19 @@
 <h1>Модерация постов</h1>
 
 <table style='width:100%; border-collapse: collapse;'>
-   <tr style='background-color: #f0f0f0; text-align: left;'>
-       <th>Пост ID</th>
-       <th>Контент</th>
-       <th>Статус</th>
-       <th>Действия</th>
+   <tr style='background-color: #5c5c5c; text-align: left;'>
+       <th style='color: #fff; font-size: 1.2rem; border: 1px solid #ddd; padding: 10px;'>Пост ID</th>
+       <th style='color: #fff; font-size: 1.2rem; border: 1px solid #ddd; padding: 10px;'>Контент</th>
+       <th style='color: #fff; font-size: 1.2rem; border: 1px solid #ddd; padding: 10px;'>Статус</th>
+       <th style='color: #fff; font-size: 1.2rem; border: 1px solid #ddd; padding: 10px;'>Действия</th>
    </tr>
 
    {% for post in posts %}
    <tr style='border: 1px solid #ddd;'>
-       <td>{{ post.id }}</td>
-       <td>{{ post.content_text }}</td>
-       <td>{{ 'Active' if post.is_active else 'Inactive' }}</td>
-       <td style='display:flex;'>
+       <td style='color: #fff; border: 1px solid #ddd; padding: 10px;'>{{ post.id }}</td>
+       <td style='color: #fff; border: 1px solid #ddd; padding: 10px;'><a href="{{ url_for('comments.list_comments', post_id=post.id) }}">{{ post.content_text }}</a></td>
+       <td style='color: #fff; border: 1px solid #ddd; padding: 10px;'>{{ 'Active' if post.is_active else 'Inactive' }}</td>
+       <td style='display:flex; border: 1px solid #ddd; padding: 10px;'>
            {% if not post.is_active %}
            <form action="{{ url_for('moderation.approve_post', post_id=post.id) }}" method='POST'>
                <button type='submit' class='ant-btn ant-btn-primary'>Одобрить</button></form>{% endif %}

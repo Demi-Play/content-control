@@ -11,14 +11,14 @@
     {{ form.hidden_tag() }}
 
     <div class="ant-form-item">
-        {{ form.content_text.label }}<br>{{ form.content_text(class='ant-input', cols=30, rows=5) }}
+        {{ form.content_text.label(class='ant-form-item-label', style='color: #fff;') }}<br>{{ form.content_text(class='ant-input', cols=30, rows=5, style='color: #fff; background-color: #5c5c5c;') }}
     </div>
 
     <div class="ant-form-item">
-        {{ form.file.label }}<br>{{ form.file(class='ant-input') }}
+        {{ form.file.label(class='ant-form-item-label', style='color: #fff;') }}<br>{{ form.file(class='ant-input', style='color: #fff; background-color: #5c5c5c;') }}
     </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label(class='ant-btn-primary', style='color: #fff;') }}</button>
 </form>
 
 <a href="{{ url_for('posts.list_posts') }}" class="ant-btn ant-btn-default">Отмена</a>

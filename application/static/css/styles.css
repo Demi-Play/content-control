@@ -1,0 +1,92 @@
+    /* Темно-серый	#333333	Основной фон, фоновые элементы */
+    body {
+        background-color: #333333;
+    }
+    
+    /* Яркий красный	#FF0000	Кнопки призыва к действию */
+    .ant-btn-primary {
+        background-color: #FF0000;
+        border-color: #FF0000;
+    }
+
+    /* Синий	#4567b7	Дополнительные элементы или акценты */
+
+    .ant-btn-primary:hover {
+        background-color: #FF0000;
+        border-color: #FF0000;
+    }
+    
+    p {
+        color: #ffffff;
+    }
+
+    h1 {
+        color: #ffffff;
+    }
+
+    .feature h3 {
+        color: #FF0000;
+    }
+
+    .feature p {
+        color: #1890ff;
+    }
+
+    header {
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        z-index: 1000; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        padding: 0 20px; 
+        background-color: #333333;
+    }
+
+    .ant-menu {
+        background-color: #333333;
+    }
+    
+    .ant-menu-horizontal {
+        border-bottom: none;
+    }
+
+    nav a {
+        color: #FF0000;
+        background-color: #333333;
+    }
+
+    nav a:hover {
+        color: #1890ff;
+    }
+
+    .feature .ant-col{
+        background-color: #9c9c9c;
+        border-radius: 10px;
+    }
+
+    .feature .ant-row {
+        background-color: #333333;
+    }
+    
+
+    /* Приглушенный красный	#FFC0CB	Основные элементы */
+
+    /* .ant-btn-primary {
+        background-color: #FFC0CB;
+        border-color: #FFC0CB;
+    }
+
+    .ant-btn-primary:hover {
+        background-color: #FFC0CB;
+        border-color: #FFC0CB;
+    }
+     */
+
+    input, textarea {
+        background-color: #333333;
+        color: #ffffff;
+    }
+
+
+    

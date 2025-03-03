@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import session, redirect, url_for, flash
+from flask_login import current_user
 
 def login_required(f):
     @wraps(f)
@@ -14,7 +15,7 @@ def moderator_required(role):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if 'user_id' not in session or session.get('role') != role:
+            if current_user.role != role:
                 flash("У вас нет доступа к этой странице.")
                 return redirect(url_for('index')) 
             return f(*args, **kwargs)

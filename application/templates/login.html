@@ -10,23 +10,29 @@
     {{ form.hidden_tag() }}
     
     <div class="ant-form-item">
-        {{ form.username.label }}<br>
-        {{ form.username(class='ant-input', size=32) }}
+        {{ form.username.label(style='color: #fff;') }}<br>
+        {{ form.username(class='ant-input', size=32 , style='color: #fff; background-color: #5c5c5c;') }}
+        {% for error in form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </div>
 
     <div class="ant-form-item">
-        {{ form.password.label }}<br>
-        {{ form.password(class='ant-input', size=32) }}
+        {{ form.password.label(style='color: #fff;') }}<br>
+        {{ form.password(class='ant-input', size=32 , style='color: #fff; background-color: #5c5c5c;') }}
+        {% for error in form.password.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </div>
 
     <div class="ant-form-item">
-        {{ form.remember_me() }} {{ form.remember_me.label }}
+        {{ form.remember_me() }} {{ form.remember_me.label(style='color: #fff;') }}
     </div>
 
     <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
 </form>
 
-<a href="{{ url_for('auth.register') }}">Еще нет аккаунта? Создайте его скорее.</a>
+<a href="{{ url_for('auth.register') }}">Еще нет аккаунта? Создайте его скорее.</a><br>
 <a href="{{ url_for('auth.forget_pass') }}" style="color: brown;">Забыли пароль?</a>
 </div>
 {% endblock %}

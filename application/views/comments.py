@@ -1,5 +1,5 @@
 from flask import Blueprint, session, redirect, url_for, flash, request, render_template
-
+from flask_login import current_user, login_required
 from application.content_analysis import ContentModerator
 from ..models import ModerationLog, db, Comment, Post
 from ..forms import CommentForm
@@ -8,15 +8,16 @@ comments_bp = Blueprint('comments', __name__)
 
 @comments_bp.route('/post/<int:post_id>/comments', methods=['GET'])
 def list_comments(post_id):
+    form = CommentForm()
     post=Post.query.get_or_404(post_id) 
     comments=Comment.query.filter_by(post_id=post.id).all() 
-    return render_template("comments.html", post=post , comments=comments) 
+    return render_template("comments.html", post=post , comments=comments, form=form) 
 
 @comments_bp.route('/post/<int:post_id>/comment/new', methods=['POST'])
+@login_required
 def add_comment(post_id):
-    if 'user_id' not in session:
-        flash("Вы должны быть авторизованы для того, чтобы оставлять комментарии.")
-        return redirect(url_for("auth.login"))
+    # flash("Вы должны быть авторизованы для того, чтобы оставлять комментарии.")
+    # return redirect(url_for("auth.login"))
 
     text = request.form.get("text")
     

@@ -4,51 +4,93 @@
 
 {% block content %}
 <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-
-<h1>Профиль пользователя: {{ user.username }}</h1>
-<p>Email: {{ user.email }}</p>
-
-<h2>Посты пользователя</h2>
-<div class="ant-row">
-    {% for post in posts %}
-    <div class="ant-col ant-col-8" style="padding: 10px;">
-        <div class="ant-card" style="width: 100%;">
-            <div class="ant-card-body">
-                <h3>Пост ID: {{ post.id }}</h3>
-                <p>{{ post.content_text }}</p>
-                {% if post.file_path %}
-                <div class="media-container">
-                    {% if post.file_type == 'image' %}
-                    <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="width: 100%; height: auto;">
-                    {% elif post.file_type == 'video' %}
-                    <video controls style="width: 100%;">
-                        <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4">
-                        Ваш браузер не поддерживает видео.
-                    </video>
-                    {% endif %}
-                </div>
-                {% endif %}
-                <!-- Счетчик лайков -->
-                <span>👍 {{ post.likes|length }}</span>
-
-                <!-- Счетчик комментариев -->
-                <span>💬 {{ post.comments|length }}</span>
-                <div style="margin-top: 10px;">
-                {% if post.user_id == session.get('user_id') %}
-                <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
-                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
-                    </form>
-                    {% endif %}
-                </div>
+    <div class="profile-header" style="
+        background-color: #333333;
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: #fff;
+    ">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="margin: 0 0 10px 0;">{{ user.username|upper }}</h1>
+                <p style="margin: 0; color: #1890ff;">Email: {{ user.email }}</p>
+                <p style="margin: 5px 0 0 0; color: #999;">Роль: {{ user.role }}</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0 0 5px 0;">Всего постов: {{ posts|length }}</p>
             </div>
         </div>
     </div>
-    {% else %}
-    <p>Нет доступных постов.</p>
-    {% endfor %}
+
+    <h2 style="color: #fff; margin-bottom: 20px;">Посты пользователя</h2>
+    <div class="posts-grid" style="
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    ">
+        {% for post in posts %}
+        <div class="post-card" style="
+            background-color: #333333;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        ">
+            {% if post.file_path %}
+            <div class="media-container" style="
+                width: 100%;
+                height: 200px;
+                overflow: hidden;
+            ">
+                {% if post.file_type == 'image' %}
+                <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" 
+                     alt="Post Image" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+                {% elif post.file_type == 'video' %}
+                <video style="width: 100%; height: 100%; object-fit: cover;">
+                    <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4">
+                </video>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div class="post-content" style="padding: 15px;">
+                <p style="color: #fff; margin: 0 0 10px 0;">{{ post.content_text }}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; color: #999; font-size: 0.9em;">
+                    <div>
+                        <span>👍 {{ post.likes|length }}</span>
+                        <span style="margin-left: 10px;">💬 {{ post.comments|length }}</span>
+                    </div>
+                    <span>{{ post.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                </div>
+                {% if current_user.is_authenticated and (current_user.id == post.user_id or current_user.role == 'moderator') %}
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
+                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; color: #fff; padding: 20px;">
+            <p>Нет доступных постов.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="text-align: center;">
+        <a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+    </div>
 </div>
 
-<a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
-</div>
+<style>
+    .post-card:hover {
+        transform: translateY(-5px);
+    }
+    .post-content {
+        background-color: #333333;
+    }
+</style>
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SubmitField, BooleanField, FileField, SelectField
+from wtforms import StringField, PasswordField, TextAreaField, SubmitField, BooleanField, FileField, SelectField, DateTimeField
 from wtforms.validators import DataRequired, Email, Length, equal_to
 
 class RegistrationForm(FlaskForm):
@@ -42,3 +42,14 @@ class UserEditForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     role = SelectField('Роль', choices=[('user', 'Пользователь'), ('moderator', 'Модератор'), ('admin', 'Администратор')], validators=[DataRequired()])
     submit = SubmitField('Сохранить изменения')
+
+class EventForm(FlaskForm):
+    title = StringField('Название события', validators=[DataRequired()])
+    description = TextAreaField('Описание события')
+    date = DateTimeField('Дата события', format='%Y-%m-%dT%H:%M', validators=[DataRequired()], render_kw={"type": "datetime-local"})
+    submit = SubmitField('Добавить событие')
+
+class NewsForm(FlaskForm):
+    title = StringField('Название новости', validators=[DataRequired()])
+    content = TextAreaField('Содержание новости', validators=[DataRequired()])
+    submit = SubmitField('Добавить новость')

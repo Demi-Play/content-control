@@ -11,21 +11,21 @@
     {{ form.hidden_tag() }}
     
     <div class="ant-form-item">
-        {{ form.username.label }}<br>
-        {{ form.username(class='ant-input') }}
+        {{ form.username.label(style='color: #fff;') }}<br>
+        {{ form.username(class='ant-input', style='color: #fff; background-color: #5c5c5c;') }}
     </div>
 
     <div class="ant-form-item">
-        {{ form.email.label }}<br>
-        {{ form.email(class='ant-input') }}
+        {{ form.email.label(style='color: #fff;') }}<br>
+        {{ form.email(class='ant-input', style='color: #fff; background-color: #5c5c5c;') }}
     </div>
 
     <div class="ant-form-item">
-        {{ form.role.label }}<br>
-        {{ form.role(class='ant-select') }}
+        {{ form.role.label(style='color: #fff;') }}<br>
+        {{ form.role(class='ant-select', style='color: #fff; background-color: #5c5c5c;') }}
     </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
+    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
 </form>
 
 <a href="{{ url_for('admin.list_users') }}" class="ant-btn ant-btn-default">Назад к списку пользователей</a>

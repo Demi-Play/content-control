@@ -13,9 +13,9 @@
         {% for post in posts %}
           <div class="ant-col ant-col-8" style="padding: 10px;">
             <div class="ant-card" style="width: 100%;">
-              <div class="ant-card-body">
-                <h3>Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}">{{ post.author.username }}</a></h3>
-                <p>{{ post.content_text }}</p>
+              <div class="ant-card-body" style="background-color: #5c5c5c;">
+                <h3 style="color: #ffffff;">Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}">{{ post.author.username }}</a></h3>
+                <p style="color: #ffffff;">{{ post.content_text }}</p>
                 {% if post.file_path %}
                   <div class="media-container">
                     {% if post.file_type == 'image' %}
