@@ -8,9 +8,9 @@
     {% if current_user.is_authenticated and current_user.role == 'moderator' %}
     <a href="{{ url_for('events.add_event') }}">Добавить новое событие</a>
     {% endif %}
-    <div class="feature ant-row" style="display: flex; justify-content: space-between; background-color: #5c5c5c; border-radius: 8px;">
+    <div class="feature ant-row" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; border-radius: 8px;">
         {% for event in events %}
-        <div class="feature ant-col" style="padding: 20px; background-color: #5c5c5c; border-radius: 8px;">
+        <div class="feature ant-col" style="padding: 10px; margin-bottom: 10px; background-color: #5c5c5c; border-radius: 8px;">
             <h2 style="color: #ffffff;">{{ event.title }}</h2>
             <p style="color: #ffffff;">{{ event.description }}</p>
             <p style="color: #ffffff;">Дата: {{ event.date }}</p>
@@ -21,6 +21,7 @@
             </form>
             {% endif %}
         </li>
+        </div>
         {% endfor %}
     </div>
 </div>

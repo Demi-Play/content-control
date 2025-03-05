@@ -33,7 +33,7 @@ def add_comment(post_id):
     # Если комментарий прошел модерацию
     new_comment = Comment(
         post_id=post_id, 
-        user_id=session['user_id'], 
+        user_id=current_user.id, 
         text=text
     )
     
@@ -48,7 +48,7 @@ def edit_comment(post_id, comment_id):
     comment = Comment.query.get_or_404(comment_id)
     
     # Проверка прав доступа к редактированию комментария
-    if comment.user_id != session.get('user_id'):
+    if comment.user_id != current_user.id:
         flash('У вас нет прав для редактирования этого комментария.')
         return redirect(url_for("comments.list_comments", post_id=post_id))
 

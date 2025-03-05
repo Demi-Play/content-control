@@ -24,7 +24,7 @@
             <td>{{ user.email }}</td>
             <td>{{ user.role }}</td>
             <td>
-                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
+                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="ant-btn ant-btn-link" style="color: #ffffff;"><button class="ant-btn ant-btn-link--secondary ant-btn-link-hover ant-btn-link-hover-active">Редактировать</button></a>
                 <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
                     <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
                 </form>
@@ -51,7 +51,7 @@
     }
 </style>
 
-<a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+<a href="{{ url_for('index') }}" class="ant-btn ant-btn-default" style="margin-top: 20px;">Назад на главную</a>
 
 </div>
 {% endblock %}

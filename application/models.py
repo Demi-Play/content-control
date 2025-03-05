@@ -13,6 +13,9 @@ class User(db.Model, UserMixin):
     posts = db.relationship('Post', backref='author', lazy=True)
     likes = db.relationship('Like', backref='user', lazy=True)
     comments = db.relationship('Comment', backref='user', lazy=True)
+    
+    # is_blocked = db.Column(db.Boolean, default=False)
+    
 
 
 

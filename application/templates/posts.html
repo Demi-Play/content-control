@@ -11,10 +11,10 @@
     <div class="site-card-wrapper" style="padding: 20px; ">
       <div class="ant-row" style="display: flex; flex-wrap: wrap; justify-content: center;">
         {% for post in posts %}
-          <div class="ant-col ant-col-8" style="padding: 10px;">
-            <div class="ant-card" style="width: 100%;">
-              <div class="ant-card-body" style="background-color: #5c5c5c;">
-                <h3 style="color: #ffffff;">Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}">{{ post.author.username }}</a></h3>
+          <div class="ant-col ant-col-8" style="padding: 10px; border-radius: 10px;">
+            <div class="ant-card" style="width: 100%; border-radius: 120px;">
+              <div class="ant-card-body" style="background-color: #5c5c5c; border-radius: 10px;">
+                <h3 style="color: #ffffff;">Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}" style="color: #ffffff;">{{ post.author.username }}</a></h3>
                 <p style="color: #ffffff;">{{ post.content_text }}</p>
                 {% if post.file_path %}
                   <div class="media-container">
@@ -30,14 +30,14 @@
                 <div style="margin-top: 10px;">
                   <!-- Счетчик лайков -->
                   <form action="{{ url_for('likes.like_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="ant-btn ant-btn-link">Лайки 👍 {{ post.likes|length }}</button>
+                    <button type="submit" class="ant-btn ant-btn-link" style="color: #ffffff;">Лайки 👍 {{ post.likes|length }}</button>
                   </form>
 
                   <!-- Счетчик комментариев -->
-                  <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link">Комментарии {{ post.comments|length }} 💬</a>
+                  <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link" style="color: #ffffff;">Комментарии {{ post.comments|length }} 💬</a>
                 </div>
                 <div style="margin-top: 10px;">
-                  {% if post.user_id == session.get('user_id') %}
+                  {% if post.user_id == current_user.id %}
                     <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
                     <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
                       <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
