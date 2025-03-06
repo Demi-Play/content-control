@@ -1,11 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, SubmitField, BooleanField, FileField, SelectField, DateTimeField
-from wtforms.validators import DataRequired, Email, Length, equal_to
+from wtforms.validators import DataRequired, Email, Length, equal_to, ValidationError
+from application.models import User
 
 class RegistrationForm(FlaskForm):
     username = StringField('Имя пользователя', validators=[DataRequired(), Length(min=2, max=150)])
     email = StringField('Почта', validators=[DataRequired(), Email()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6, message='Пароль должен содержать минимум 6 символов')])
     submit = SubmitField('Зарегистрироваться')
 
 class LoginForm(FlaskForm):
@@ -15,10 +16,35 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
     
 class ResetPasswordForm(FlaskForm):
-    username = StringField('Имя пользователя', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired()])
-    password = PasswordField('Новый Пароль', validators=[DataRequired()])
+    username = StringField('Имя пользователя', validators=[DataRequired(message='Пожалуйста, введите имя пользователя')])
+    email = StringField('Email', validators=[
+        DataRequired(message='Пожалуйста, введите email'),
+        Email(message='Пожалуйста, введите корректный email')
+    ])
+    password = PasswordField('Новый пароль', validators=[
+        DataRequired(message='Пожалуйста, введите новый пароль'),
+        Length(min=6, message='Пароль должен содержать минимум 6 символов')
+    ])
+    password2 = PasswordField('Повторите пароль', validators=[
+        DataRequired(message='Пожалуйста, повторите пароль'),
+        equal_to('password', message='Пароли должны совпадать')
+    ])
     submit = SubmitField('Сбросить пароль')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if not user:
+            raise ValidationError('Пользователь с таким именем не найден')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if not user:
+            raise ValidationError('Пользователь с таким email не найден')
+        
+        # Проверяем, что email соответствует указанному пользователю
+        username_user = User.query.filter_by(username=self.username.data).first()
+        if username_user and username_user.email != email.data:
+            raise ValidationError('Email не соответствует указанному пользователю')
 
 class PostForm(FlaskForm):
     content_text = TextAreaField('Контент', validators=[DataRequired()])

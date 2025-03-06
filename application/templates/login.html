@@ -4,35 +4,51 @@
 
 {% block content %}
 <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-
-<h1>Вход</h1>
-<form method="POST">
-    {{ form.hidden_tag() }}
+    <h1 style="color: #fff; margin-bottom: 30px;">Вход</h1>
     
-    <div class="ant-form-item">
-        {{ form.username.label(style='color: #fff;') }}<br>
-        {{ form.username(class='ant-input', size=32 , style='color: #fff; background-color: #5c5c5c;') }}
-        {% for error in form.username.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="ant-alert ant-alert-{{ category }}" style="margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" style="max-width: 400px;">
+        {{ form.hidden_tag() }}
+        
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.username.label(style='color: #fff;') }}<br>
+            {{ form.username(class='ant-input', size=32, style='color: #fff; background-color: #5c5c5c;') }}
+            {% for error in form.username.errors %}
+            <div class="ant-form-item-explain ant-form-item-explain-error" style="color: #ff4d4f; margin-top: 5px;">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.password.label(style='color: #fff;') }}<br>
+            {{ form.password(class='ant-input', size=32, style='color: #fff; background-color: #5c5c5c;') }}
+            {% for error in form.password.errors %}
+            <div class="ant-form-item-explain ant-form-item-explain-error" style="color: #ff4d4f; margin-top: 5px;">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.remember_me() }} {{ form.remember_me.label(style='color: #fff;') }}
+        </div>
+
+        <button type="submit" class="ant-btn ant-btn-primary" style="width: 100%;">{{ form.submit.label() }}</button>
+    </form>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('auth.register') }}" style="color: #1890ff; margin-right: 15px;">Еще нет аккаунта? Создайте его скорее.</a>
+        <a href="{{ url_for('auth.forget_pass') }}" style="color: #ff4d4f;">Забыли пароль?</a>
     </div>
-
-    <div class="ant-form-item">
-        {{ form.password.label(style='color: #fff;') }}<br>
-        {{ form.password(class='ant-input', size=32 , style='color: #fff; background-color: #5c5c5c;') }}
-        {% for error in form.password.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </div>
-
-    <div class="ant-form-item">
-        {{ form.remember_me() }} {{ form.remember_me.label(style='color: #fff;') }}
-    </div>
-
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
-</form>
-
-<a href="{{ url_for('auth.register') }}">Еще нет аккаунта? Создайте его скорее.</a><br>
-<a href="{{ url_for('auth.forget_pass') }}" style="color: brown;">Забыли пароль?</a>
 </div>
 {% endblock %}

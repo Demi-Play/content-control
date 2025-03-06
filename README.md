@@ -65,3 +65,7 @@ pip install textblob
 python run.py
 ```
 
+Корпоративная почта
+
+** contentcontrol61@mail.ru
+** NastyaControlConterInc

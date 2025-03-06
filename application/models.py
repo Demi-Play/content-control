@@ -10,14 +10,36 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(128), default='user')
+    is_blocked = db.Column(db.Boolean, default=False)
+    failed_login_attempts = db.Column(db.Integer, default=0)
+    last_failed_login = db.Column(db.DateTime)
     posts = db.relationship('Post', backref='author', lazy=True)
     likes = db.relationship('Like', backref='user', lazy=True)
     comments = db.relationship('Comment', backref='user', lazy=True)
     
     # is_blocked = db.Column(db.Boolean, default=False)
     
+    def is_active(self):
+        if self.is_blocked:
+            return False
+        if self.failed_login_attempts >= 3:
+            if self.last_failed_login and (datetime.now() - self.last_failed_login).total_seconds() < 300:  # 5 минут
+                return False
+            else:
+                # Сбрасываем счетчик после 5 минут
+                self.failed_login_attempts = 0
+                return True
+        return True
 
+    def increment_failed_login(self):
+        self.failed_login_attempts += 1
+        self.last_failed_login = datetime.now()
+        db.session.commit()
 
+    def reset_failed_login(self):
+        self.failed_login_attempts = 0
+        self.last_failed_login = None
+        db.session.commit()
 
     def __repr__(self):
         return f"<User {self.username}>"

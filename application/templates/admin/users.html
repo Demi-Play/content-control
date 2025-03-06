@@ -4,54 +4,100 @@
 
 {% block content %}
 <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+    <h1 style="color: #fff; margin-bottom: 30px;">Список пользователей</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="ant-alert ant-alert-{{ category }}" style="margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-<h1>Список пользователей</h1>
-<table class="ant-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Имя пользователя</th>
-            <th>Email</th>
-            <th>Роль</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.role }}</td>
-            <td>
-                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="ant-btn ant-btn-link" style="color: #ffffff;"><button class="ant-btn ant-btn-link--secondary ant-btn-link-hover ant-btn-link-hover-active">Редактировать</button></a>
-                <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <table class="ant-table" style="width: 100%; margin-bottom: 20px;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя пользователя</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    {% if user.is_blocked %}
+                        <span style="color: #ff4d4f;">Заблокирован</span>
+                    {% elif user.failed_login_attempts >= 3 %}
+                        <span style="color: #faad14;">Временная блокировка</span>
+                    {% else %}
+                        <span style="color: #52c41a;">Активен</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="ant-btn ant-btn-link">
+                            Редактировать
+                        </a>
+                        {% if user.is_blocked %}
+                            <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="ant-btn ant-btn-success">Разблокировать</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('admin.block_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="ant-btn ant-btn-danger">Заблокировать</button>
+                            </form>
+                        {% endif %}
+                        <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-<style>
-    table {
-        text-align: left;
-        width: 100%;
-        border-collapse: collapse;
-        border: 1px solid #ddd;
-        background-color: #333333;
-    }
-    th, td {
-        padding: 8px;
-        text-align: left;
-        border: 1px solid #ddd;
-        background-color: #5c5c5c;
-        color: #fff;
-    }
-</style>
+    <style>
+        .ant-table {
+            background-color: #333333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .ant-table th {
+            background-color: #5c5c5c;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+        }
+        .ant-table td {
+            background-color: #333333;
+            color: #fff;
+            padding: 12px;
+            border-top: 1px solid #5c5c5c;
+        }
+        .ant-btn-success {
+            background-color: #52c41a;
+            border-color: #52c41a;
+            color: #fff;
+        }
+        .ant-btn-success:hover {
+            background-color: #73d13d;
+            border-color: #73d13d;
+        }
+    </style>
 
-<a href="{{ url_for('index') }}" class="ant-btn ant-btn-default" style="margin-top: 20px;">Назад на главную</a>
-
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+    </div>
 </div>
 {% endblock %}

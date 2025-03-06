@@ -1,34 +1,79 @@
 {% extends 'base.html' %}
 
-{% block title %}Редактирование пользователя: {{ user.username }}{% endblock %}
+{% block title %}Редактирование пользователя{% endblock %}
 
 {% block content %}
-<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-
-<h1>Редактирование пользователя: {{ user.username }}</h1>
-
-<form method="POST">
-    {{ form.hidden_tag() }}
+<div class="home-container" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+    <h1 style="color: #fff; margin-bottom: 30px;">Редактирование пользователя</h1>
     
-    <div class="ant-form-item">
-        {{ form.username.label(style='color: #fff;') }}<br>
-        {{ form.username(class='ant-input', style='color: #fff; background-color: #5c5c5c;') }}
-    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="ant-alert ant-alert-{{ category }}" style="margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <div class="ant-form-item">
-        {{ form.email.label(style='color: #fff;') }}<br>
-        {{ form.email(class='ant-input', style='color: #fff; background-color: #5c5c5c;') }}
-    </div>
+    <form method="POST" class="ant-form" style="background-color: #333333; padding: 20px; border-radius: 8px;">
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            <label for="username" style="display: block; color: #fff; margin-bottom: 8px;">Имя пользователя</label>
+            <input type="text" id="username" name="username" value="{{ user.username }}" required
+                   class="ant-input" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #5c5c5c; background-color: #1f1f1f; color: #fff;">
+        </div>
 
-    <div class="ant-form-item">
-        {{ form.role.label(style='color: #fff;') }}<br>
-        {{ form.role(class='ant-select', style='color: #fff; background-color: #5c5c5c;') }}
-    </div>
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            <label for="email" style="display: block; color: #fff; margin-bottom: 8px;">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required
+                   class="ant-input" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #5c5c5c; background-color: #1f1f1f; color: #fff;">
+        </div>
 
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label() }}</button>
-</form>
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            <label for="role" style="display: block; color: #fff; margin-bottom: 8px;">Роль</label>
+            <select id="role" name="role" required
+                    class="ant-select" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #5c5c5c; background-color: #1f1f1f; color: #fff;">
+                <option value="user" {% if user.role == 'user' %}selected{% endif %}>Пользователь</option>
+                <option value="moderator" {% if user.role == 'moderator' %}selected{% endif %}>Модератор</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Администратор</option>
+            </select>
+        </div>
 
-<a href="{{ url_for('admin.list_users') }}" class="ant-btn ant-btn-default" style="margin-top: 20px;">Назад к списку пользователей</a>
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            <label for="password" style="display: block; color: #fff; margin-bottom: 8px;">Новый пароль (оставьте пустым, чтобы не менять)</label>
+            <input type="password" id="password" name="password"
+                   class="ant-input" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #5c5c5c; background-color: #1f1f1f; color: #fff;">
+        </div>
 
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="ant-btn ant-btn-primary">Сохранить</button>
+            <a href="{{ url_for('admin.users') }}" class="ant-btn ant-btn-default">Отмена</a>
+        </div>
+    </form>
+
+    <style>
+        .ant-input:focus, .ant-select:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+        .ant-btn-primary {
+            background-color: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+        .ant-btn-primary:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+        }
+        .ant-btn-default {
+            background-color: #1f1f1f;
+            border-color: #5c5c5c;
+            color: #fff;
+        }
+        .ant-btn-default:hover {
+            background-color: #2f2f2f;
+            border-color: #7c7c7c;
+        }
+    </style>
 </div>
 {% endblock %}
