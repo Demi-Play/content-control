@@ -3,12 +3,11 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
 from application.content_analysis import ContentModerator
-from application.decorators import login_required
 from ..models import Like, db, Post, Comment
 from ..forms import PostForm
 from ..app import app, transliterate_filename
 from werkzeug.utils import secure_filename
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 posts_bp = Blueprint('posts', __name__)
 

@@ -1,51 +1,53 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
 from ..models import Event, db
 from ..forms import EventForm
-from application.decorators import login_required
-
+from datetime import datetime
 
 events_bp = Blueprint('events', __name__)
 
 @events_bp.route('/events')
-@login_required
 def list_events():
-    events = Event.query.all()
+    events = Event.query.order_by(Event.date.desc()).all()
     return render_template('events.html', events=events)
 
-@events_bp.route('/events/new', methods=['GET', 'POST'])
+@events_bp.route('/events/add', methods=['GET', 'POST'])
 @login_required
 def add_event():
     form = EventForm()
     if form.validate_on_submit():
-        print("Form data received:", form.data)  # Debug print
-        event = Event(title=form.title.data, description=form.description.data, date=form.date.data)
+        event = Event(
+            title=form.title.data,
+            description=form.description.data,
+            date=form.date.data
+        )
         db.session.add(event)
         db.session.commit()
-        flash('Event added successfully!')
+        flash('Мероприятие успешно добавлено!', 'success')
         return redirect(url_for('events.list_events'))
-    else:
-        print("Form validation errors:", form.errors)  # Debug print
     return render_template('add_event.html', form=form)
 
-@events_bp.route('/events/edit/<int:event_id>', methods=['GET', 'POST'])
+@events_bp.route('/events/<int:event_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_event(event_id):
     event = Event.query.get_or_404(event_id)
     form = EventForm(obj=event)
+    
     if form.validate_on_submit():
         event.title = form.title.data
         event.description = form.description.data
         event.date = form.date.data
         db.session.commit()
-        flash('Event updated successfully!')
+        flash('Мероприятие успешно обновлено!', 'success')
         return redirect(url_for('events.list_events'))
+    
     return render_template('edit_event.html', form=form, event=event)
 
-@events_bp.route('/events/delete/<int:event_id>', methods=['POST'])
+@events_bp.route('/events/<int:event_id>/delete', methods=['POST'])
 @login_required
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
     db.session.delete(event)
     db.session.commit()
-    flash('Event deleted successfully!')
+    flash('Мероприятие успешно удалено!', 'success')
     return redirect(url_for('events.list_events')) 

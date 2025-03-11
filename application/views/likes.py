@@ -1,6 +1,5 @@
 from flask import Blueprint, redirect, url_for, flash
-from flask_login import current_user
-from application.decorators import login_required
+from flask_login import current_user, login_required
 from ..models import db, Like
 
 likes_bp = Blueprint('likes', __name__)

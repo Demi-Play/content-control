@@ -10,6 +10,13 @@ from flask_login import LoginManager
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config.from_object(Config)
 
+# Инициализация LoginManager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'  # Указываем точку входа для авторизации
+login_manager.login_message = 'Пожалуйста, войдите для доступа к этой странице.'
+login_manager.login_message_category = 'error'
+
 def transliterate_filename(filename):
     # Удаляем пробелы и расширение
     name, ext = os.path.splitext(filename)
@@ -22,8 +29,6 @@ def transliterate_filename(filename):
 # Инициализация базы данных
 db.init_app(app)
 migrate = Migrate(app, db)
-
-login_manager = LoginManager(app)
 
 # Создание базы данных и таблиц (если еще не созданы)
 with app.app_context():

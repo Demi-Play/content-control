@@ -8,8 +8,8 @@
   <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
     <h1>Публикации</h1>
     <a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary" style="margin-bottom: 20px;">Создать новый пост</a>
-    <div class="site-card-wrapper" style="padding: 20px; ">
-      <div class="ant-row" style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <div class="site-card-wrapper" style="padding: 20px; display: flex; flex-wrap: wrap; justify-content: center;">
+      <div class="ant-row" style="display: flex; flex-wrap: wrap;">
         {% for post in posts %}
           <div class="ant-col ant-col-8" style="padding: 10px; border-radius: 10px;">
             <div class="ant-card" style="width: 100%; border-radius: 120px;">
@@ -69,6 +69,25 @@
     }
     .ant-card {
       min-width: 360px;
+    }
+    .ant-row {
+      
+      overflow-y: hidden;
+
+      
+    }
+    .ant-col {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 50px;
+    }
+    .home-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 {% endblock %}

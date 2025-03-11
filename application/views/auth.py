@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from ..models import Post, db, User
 from ..forms import RegistrationForm, LoginForm, ResetPasswordForm
 import logging
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from ..app import login_manager
 from datetime import datetime
 
@@ -106,13 +106,17 @@ def login():
     return render_template('login.html', form=form)
 
 @auth_bp.route('/logout')
+@login_required
 def logout():
     logout_user()
     flash('Вы успешно вышли из системы.', 'success')
     return redirect(url_for('index'))
 
 @auth_bp.route('/profile', methods=['GET'])
+@login_required
 def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))
     user = User.query.get_or_404(current_user.id)
     posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('profile.html', user=user, posts=posts)

@@ -1,46 +1,50 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
 from ..models import News, db
 from ..forms import NewsForm
-from application.decorators import login_required
 
 news_bp = Blueprint('news', __name__)
 
 @news_bp.route('/news')
-@login_required
 def list_news():
-    news_items = News.query.all()
+    news_items = News.query.order_by(News.created_at.desc()).all()
     return render_template('news.html', news_items=news_items)
 
-@news_bp.route('/news/new', methods=['GET', 'POST'])
+@news_bp.route('/news/add', methods=['GET', 'POST'])
 @login_required
 def add_news():
     form = NewsForm()
     if form.validate_on_submit():
-        news = News(title=form.title.data, content=form.content.data)
+        news = News(
+            title=form.title.data,
+            content=form.content.data
+        )
         db.session.add(news)
         db.session.commit()
-        flash('News added successfully!')
+        flash('Новость успешно добавлена!', 'success')
         return redirect(url_for('news.list_news'))
     return render_template('add_news.html', form=form)
 
-@news_bp.route('/news/edit/<int:news_id>', methods=['GET', 'POST'])
+@news_bp.route('/news/<int:news_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_news(news_id):
-    news_item = News.query.get_or_404(news_id)
-    form = NewsForm(obj=news_item)
+    news = News.query.get_or_404(news_id)
+    form = NewsForm(obj=news)
+    
     if form.validate_on_submit():
-        news_item.title = form.title.data
-        news_item.content = form.content.data
+        news.title = form.title.data
+        news.content = form.content.data
         db.session.commit()
-        flash('News updated successfully!')
+        flash('Новость успешно обновлена!', 'success')
         return redirect(url_for('news.list_news'))
-    return render_template('edit_news.html', form=form, news_item=news_item)
+    
+    return render_template('edit_news.html', form=form, news=news)
 
-@news_bp.route('/news/delete/<int:news_id>', methods=['POST'])
+@news_bp.route('/news/<int:news_id>/delete', methods=['POST'])
 @login_required
 def delete_news(news_id):
-    news_item = News.query.get_or_404(news_id)
-    db.session.delete(news_item)
+    news = News.query.get_or_404(news_id)
+    db.session.delete(news)
     db.session.commit()
-    flash('News deleted successfully!')
+    flash('Новость успешно удалена!', 'success')
     return redirect(url_for('news.list_news')) 

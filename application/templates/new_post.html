@@ -21,6 +21,12 @@
     <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
 </form>
 
+<style>
+    .ant-form-item {
+        color: #fff;
+    }
+</style>
+
 <a href="{{ url_for('posts.list_posts') }}">Назад к постам</a>
 </div>
 {% endblock %}
