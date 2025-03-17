@@ -84,7 +84,7 @@ def login():
             if user.blocked_until and user.blocked_until > datetime.now():
                 remaining_time = (user.blocked_until - datetime.now()).seconds // 60
                 flash(f'Ваш аккаунт временно заблокирован. Попробуйте через {remaining_time} минут', 'error')
-                return render_template('auth/login.html', form=form)
+                return render_template('login.html', form=form)
         
         if not user.check_password(form.password.data):
             user.failed_login_attempts += 1
@@ -101,7 +101,7 @@ def login():
                 flash(f'Неверный пароль. Осталось попыток: {remaining_attempts}', 'error')
                 
             db.session.commit()
-            return render_template('auth/login.html', form=form)
+            return render_template('login.html', form=form)
             
         # Успешный вход
         user.failed_login_attempts = 0
@@ -117,7 +117,7 @@ def login():
             next_page = url_for('index')
         return redirect(next_page)
         
-    return render_template('auth/login.html', form=form)
+    return render_template('login.html', form=form)
 
 @auth_bp.route('/logout')
 @login_required
