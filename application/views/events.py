@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from ..models import Event, db
+from ..models import Event, db, UserActivity
 from ..forms import EventForm
 from datetime import datetime
 
@@ -21,8 +21,20 @@ def add_event():
             description=form.description.data,
             date=form.date.data
         )
+        
+        # Логируем действие
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='create',
+            target_type='event',
+            target_id=event.id,
+            details=f'Created new event: {event.title}'
+        )
+        
         db.session.add(event)
+        db.session.add(activity)
         db.session.commit()
+        
         flash('Мероприятие успешно добавлено!', 'success')
         return redirect(url_for('events.list_events'))
     return render_template('add_event.html', form=form)
@@ -37,7 +49,19 @@ def edit_event(event_id):
         event.title = form.title.data
         event.description = form.description.data
         event.date = form.date.data
+        
+        # Логируем действие
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='edit',
+            target_type='event',
+            target_id=event_id,
+            details=f'Edited event: {event.title}'
+        )
+        
+        db.session.add(activity)
         db.session.commit()
+        
         flash('Мероприятие успешно обновлено!', 'success')
         return redirect(url_for('events.list_events'))
     
@@ -47,7 +71,19 @@ def edit_event(event_id):
 @login_required
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
+    
+    # Логируем действие перед удалением
+    activity = UserActivity(
+        user_id=current_user.id,
+        action_type='delete',
+        target_type='event',
+        target_id=event_id,
+        details=f'Deleted event: {event.title}'
+    )
+    
+    db.session.add(activity)
     db.session.delete(event)
     db.session.commit()
+    
     flash('Мероприятие успешно удалено!', 'success')
     return redirect(url_for('events.list_events')) 

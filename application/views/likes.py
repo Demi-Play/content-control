@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, url_for, flash
 from flask_login import current_user, login_required
-from ..models import db, Like
+from ..models import db, Like, UserActivity
 
 likes_bp = Blueprint('likes', __name__)
 
@@ -14,12 +14,30 @@ def like_post(post_id):
     existing_like = Like.query.filter_by(post_id=post_id, user_id=current_user.id).first()
 
     if existing_like:
+        # Логируем удаление лайка
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='delete',
+            target_type='like',
+            target_id=post_id,
+            details=f'Removed like from post {post_id}'
+        )
+        db.session.add(activity)
         db.session.delete(existing_like)
         db.session.commit()
         flash("Лайк убран!")
     else:
         new_like = Like(post_id=post_id, user_id=current_user.id)
+        # Логируем добавление лайка
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='create',
+            target_type='like',
+            target_id=post_id,
+            details=f'Added like to post {post_id}'
+        )
         db.session.add(new_like)
+        db.session.add(activity)
         db.session.commit()
         flash("Лайк поставлен!")
 
@@ -34,6 +52,15 @@ def unlike_post(post_id):
     existing_like = Like.query.filter_by(post_id=post_id, user_id=current_user.id).first()
 
     if existing_like:
+        # Логируем удаление лайка
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='delete',
+            target_type='like',
+            target_id=post_id,
+            details=f'Removed like from post {post_id}'
+        )
+        db.session.add(activity)
         db.session.delete(existing_like)
         db.session.commit()
         flash("Лайк убран!")

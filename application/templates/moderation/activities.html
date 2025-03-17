@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Журнал действий{% endblock %}
+
+{% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+    <h1 style="color: #fff; margin-bottom: 30px;">Журнал действий пользователей</h1>
+
+    <div class="filters" style="background-color: #333333; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div class="filter-item">
+                <label style="display: block; color: #fff; margin-bottom: 8px;">Пользователь</label>
+                <select name="user_id" class="ant-select" style="width: 100%; padding: 8px; border-radius: 4px; background-color: #1f1f1f; color: #fff; border: 1px solid #5c5c5c;">
+                    <option value="">Все пользователи</option>
+                    {% for user in users %}
+                    <option value="{{ user.id }}" {% if user.id == selected_user_id %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label style="display: block; color: #fff; margin-bottom: 8px;">Тип действия</label>
+                <select name="action_type" class="ant-select" style="width: 100%; padding: 8px; border-radius: 4px; background-color: #1f1f1f; color: #fff; border: 1px solid #5c5c5c;">
+                    <option value="">Все действия</option>
+                    <option value="create" {% if selected_action_type == 'create' %}selected{% endif %}>Создание</option>
+                    <option value="edit" {% if selected_action_type == 'edit' %}selected{% endif %}>Редактирование</option>
+                    <option value="delete" {% if selected_action_type == 'delete' %}selected{% endif %}>Удаление</option>
+                    <option value="approve" {% if selected_action_type == 'approve' %}selected{% endif %}>Одобрение</option>
+                    <option value="reject" {% if selected_action_type == 'reject' %}selected{% endif %}>Отклонение</option>
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label style="display: block; color: #fff; margin-bottom: 8px;">Тип контента</label>
+                <select name="target_type" class="ant-select" style="width: 100%; padding: 8px; border-radius: 4px; background-color: #1f1f1f; color: #fff; border: 1px solid #5c5c5c;">
+                    <option value="">Весь контент</option>
+                    <option value="post" {% if selected_target_type == 'post' %}selected{% endif %}>Посты</option>
+                    <option value="news" {% if selected_target_type == 'news' %}selected{% endif %}>Новости</option>
+                    <option value="event" {% if selected_target_type == 'event' %}selected{% endif %}>Мероприятия</option>
+                    <option value="comment" {% if selected_target_type == 'comment' %}selected{% endif %}>Комментарии</option>
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label style="display: block; color: #fff; margin-bottom: 8px;">Период (дней)</label>
+                <select name="days" class="ant-select" style="width: 100%; padding: 8px; border-radius: 4px; background-color: #1f1f1f; color: #fff; border: 1px solid #5c5c5c;">
+                    <option value="1" {% if selected_days == 1 %}selected{% endif %}>1 день</option>
+                    <option value="7" {% if selected_days == 7 %}selected{% endif %}>7 дней</option>
+                    <option value="30" {% if selected_days == 30 %}selected{% endif %}>30 дней</option>
+                    <option value="90" {% if selected_days == 90 %}selected{% endif %}>90 дней</option>
+                </select>
+            </div>
+
+            <div class="filter-item" style="display: flex; align-items: flex-end;">
+                <button type="submit" class="ant-btn ant-btn-primary" style="width: 100%;">Применить фильтры</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="activities-table" style="background-color: #333333; padding: 20px; border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Время</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Пользователь</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Действие</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Тип контента</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">ID</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Детали</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #888;">
+                        {{ activity.created_at.strftime('%d.%m.%Y %H:%M') }}
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #fff;">
+                        {{ activity.user.username }}
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444;">
+                        <span style="color: 
+                            {%- if activity.action_type == 'create' -%}#52c41a
+                            {%- elif activity.action_type == 'edit' -%}#1890ff
+                            {%- elif activity.action_type == 'delete' -%}#ff4d4f
+                            {%- else -%}#faad14{% endif %}">
+                            {{ activity.action_type }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #fff;">
+                        {{ activity.target_type }}
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #fff;">
+                        {{ activity.target_id }}
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #888;">
+                        {{ activity.details }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('moderation.dashboard') }}" class="ant-btn ant-btn-default">Вернуться к панели управления</a>
+    </div>
+</div>
+
+<style>
+    .ant-select:focus {
+        outline: none;
+        border-color: #1890ff;
+    }
+    .ant-btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .ant-btn-primary {
+        background-color: #1890ff;
+        border-color: #1890ff;
+        color: #fff;
+    }
+    .ant-btn-default {
+        background-color: #1f1f1f;
+        border-color: #5c5c5c;
+        color: #fff;
+    }
+    .ant-btn:hover {
+        opacity: 0.8;
+    }
+</style>
+{% endblock %} 

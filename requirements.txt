@@ -16,3 +16,8 @@ transliterate==1.10.2
 
 # Дополнительные утилиты
 pillow==11.0.0
+
+# Mail
+flask_mail
+python-dotenv
+secure-smtplib

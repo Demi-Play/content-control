@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     posts = db.relationship('Post', backref='author', lazy=True)
     likes = db.relationship('Like', backref='user', lazy=True)
     comments = db.relationship('Comment', backref='user', lazy=True)
+    email_notifications = db.Column(db.Boolean, default=True)  # Флаг для email уведомлений
     
     # is_blocked = db.Column(db.Boolean, default=False)
     
@@ -109,3 +110,31 @@ class News(db.Model):
 
     def __repr__(self):
         return f"<News {self.title}>"
+
+class UserActivity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action_type = db.Column(db.String(50), nullable=False)  # 'create', 'edit', 'delete'
+    target_type = db.Column(db.String(50), nullable=False)  # 'post', 'comment', 'news', 'event'
+    target_id = db.Column(db.Integer, nullable=False)
+    details = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    
+    user = db.relationship('User', backref='activities')
+
+    def __repr__(self):
+        return f"<UserActivity {self.user_id} {self.action_type} {self.target_type} {self.target_id}>"
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(150), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    type = db.Column(db.String(50), nullable=False)  # 'system', 'moderation', 'email'
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    
+    user = db.relationship('User', backref='notifications')
+
+    def __repr__(self):
+        return f"<Notification {self.id} for User {self.user_id}>"

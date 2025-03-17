@@ -3,11 +3,12 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
 from application.content_analysis import ContentModerator
-from ..models import Like, db, Post, Comment
+from ..models import Like, db, Post, Comment, UserActivity
 from ..forms import PostForm
 from ..app import app, transliterate_filename
 from werkzeug.utils import secure_filename
 from flask_login import current_user, login_required
+from ..utils.notifications import notify_new_post_for_moderation
 
 posts_bp = Blueprint('posts', __name__)
 
@@ -48,14 +49,29 @@ def new_post():
             user_id=current_user.id, 
             content_text=content_text,
             file_path=new_filename,
-            file_type='image',
-            is_active=True  # По умолчанию пост активен
+            file_type='image' if new_filename else 'none',
+            is_active=False  # Пост неактивен до модерации
         )
         
         db.session.add(new_post)
+        db.session.commit()  # Сначала сохраняем пост, чтобы получить его ID
+        
+        # Логируем создание поста после получения ID
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='create',
+            target_type='post',
+            target_id=new_post.id,
+            details=f'Created new post with {"file" if new_filename else "no file"}'
+        )
+        
+        # Отправляем уведомление модераторам о новом посте
+        notify_new_post_for_moderation(new_post.id)
+        
+        db.session.add(activity)
         db.session.commit()
         
-        flash('Публикация успешно создана!')
+        flash('Публикация создана и отправлена на модерацию!')
         return redirect(url_for('posts.list_posts'))
     
     return render_template('new_post.html', form=form)
@@ -79,6 +95,16 @@ def edit_post(post_id):
         if moderator.moderate_comment(form.content_text.data):
             # Если пост не прошел модерацию
             post.is_active = False
+            
+            # Логируем деактивацию поста
+            activity = UserActivity(
+                user_id=current_user.id,
+                action_type='deactivate',
+                target_type='post',
+                target_id=post_id,
+                details='Post deactivated due to inappropriate content'
+            )
+            db.session.add(activity)
             db.session.commit()
             
             flash('Публикация содержит неприемлемый контент и была деактивирована.')
@@ -93,9 +119,18 @@ def edit_post(post_id):
             
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
             post.file_path = new_filename
-            
             post.file_type = 'image'
         
+        # Логируем редактирование поста
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='edit',
+            target_type='post',
+            target_id=post_id,
+            details=f'Edited post content and {"updated file" if form.file.data else "kept existing file"}'
+        )
+        
+        db.session.add(activity)
         db.session.commit()
         
         flash('Публикация успешно обновлена!')
@@ -112,6 +147,16 @@ def delete_post(post_id):
         flash('У вас нет необходимых разрешений для удаления данной публикации.')
         return redirect(url_for('posts.list_posts'))
     else:
+        # Логируем удаление поста
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='delete',
+            target_type='post',
+            target_id=post_id,
+            details='Post deleted with all associated comments and likes'
+        )
+        db.session.add(activity)
+        
         comments = Comment.query.filter_by(post_id=post.id).all()
         for comment in comments:
             db.session.delete(comment)
@@ -120,12 +165,9 @@ def delete_post(post_id):
         likes = Like.query.filter_by(post_id=post.id).all()
         for like in likes:
             db.session.delete(like)
-        db.session.delete(post)
         
-
-    post.is_active = False  # Логическое удаление поста
-    
-    db.session.commit()
+        db.session.delete(post)
+        db.session.commit()
     
     flash('Публикация успешно удалена!')
     return redirect(url_for('posts.list_posts'))

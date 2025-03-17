@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+    <div class="container mt-4">
+      <h2 style="color: white;">Уведомления</h2>
+
+      <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-primary" onclick="markAllAsRead()">Отметить все как прочитанные</button>
+        <a href="{{ url_for('notifications.notification_settings') }}" class="btn btn-outline-secondary">Настройки уведомлений</a>
+      </div>
+
+      <div class="notifications-list">
+        {% if notifications %}
+          {% for notification in notifications %}
+            <div class="card mb-3 {% if not notification.is_read %}bg-light{% endif %}">
+              <div class="card-body">
+                <h5 style="color: white;" class="card-title">{{ notification.title }}</h5>
+                <p style="color: white;" class="card-text">{{ notification.message }}</p>
+                <div style="color: white;" class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted" style="color: white;">{{ notification.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                  {% if not notification.is_read %}
+                    <button class="btn btn-sm btn-outline-primary" style="color: black;" onclick="markAsRead({{ notification.id }})">Отметить как прочитанное</button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info" style="color: white;">У вас нет уведомлений</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function markAsRead(notificationId) {
+      fetch('/notifications/mark-read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          notification_ids: [notificationId]
+        })
+      }).then(() => {
+        location.reload()
+      })
+    }
+    
+    function markAllAsRead() {
+      fetch('/notifications/mark-read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          notification_ids: []
+        })
+      }).then(() => {
+        location.reload()
+      })
+    }
+  </script>
+{% endblock %}

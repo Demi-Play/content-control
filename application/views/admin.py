@@ -2,8 +2,9 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 
 from application.decorators import moderator_required
-from ..models import Like, Post, db, User, Comment
+from ..models import Like, Post, db, User, Comment, UserActivity
 from ..forms import UserEditForm
+from ..utils.notifications import notify_user_blocked
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -61,13 +62,30 @@ def delete_user(user_id):
 @moderator_required('admin')
 def block_user(user_id):
     user = User.query.get_or_404(user_id)
-    if user == current_user:
-        flash('Вы не можете заблокировать самого себя', 'error')
-        return redirect(url_for('admin.list_users'))
+    reason = request.form.get('reason', '')
     
+    if user.id == current_user.id:
+        flash("Вы не можете заблокировать самого себя!", "error")
+        return redirect(url_for('admin.list_users'))
+        
     user.is_blocked = True
+    user.blocked_until = None  # Постоянная блокировка
+    
+    activity = UserActivity(
+        user_id=current_user.id,
+        action_type='block',
+        target_type='user',
+        target_id=user.id,
+        details=f'User permanently blocked. Reason: {reason}'
+    )
+    
+    db.session.add(activity)
     db.session.commit()
-    flash(f'Пользователь {user.username} успешно заблокирован', 'success')
+    
+    # Отправляем уведомление о блокировке
+    notify_user_blocked(user.id, 'permanent', reason=reason)
+    
+    flash(f"Пользователь {user.username} заблокирован!", "success")
     return redirect(url_for('admin.list_users'))
 
 @admin_bp.route('/admin/users/<int:user_id>/unblock', methods=['POST'])
@@ -81,6 +99,19 @@ def unblock_user(user_id):
     user.is_blocked = False
     user.failed_login_attempts = 0
     user.last_failed_login = None
+    user.blocked_until = None
     db.session.commit()
+    
+    activity = UserActivity(
+        user_id=current_user.id,
+        action_type='unblock',
+        target_type='user',
+        target_id=user.id,
+        details='User unblocked'
+    )
+    
+    db.session.add(activity)
+    db.session.commit()
+    
     flash(f'Пользователь {user.username} успешно разблокирован', 'success')
     return redirect(url_for('admin.list_users'))

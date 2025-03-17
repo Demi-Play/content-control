@@ -16,8 +16,14 @@
                 <a class="ant-menu-item" href="{{ url_for('posts.list_posts') }}">Публикации</a>
                 <a class="ant-menu-item" href="{{ url_for('events.list_events') }}">События</a>
                 <a class="ant-menu-item" href="{{ url_for('news.list_news') }}">Новости</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('notifications.list_notifications') }}">
+                        Уведомления
+                        <span id="unreadNotificationsCount" class="badge badge-danger"></span>
+                    </a>
+                </li>
                 {% if current_user.is_authenticated and current_user.role == 'moderator' %}
-                <a class="ant-menu-item" href="{{ url_for('moderation.moderate_posts') }}">Модерация</a>
+                <a class="ant-menu-item" href="{{ url_for('moderation.dashboard') }}">Модерация</a>
                 {% elif current_user.is_authenticated and current_user.role == 'admin' %}
                 <a class="ant-menu-item" href="{{ url_for('admin.list_users') }}">Админпанель</a>
                 {% endif %}
@@ -153,6 +159,25 @@
                 }
             });
         });
+
+        function updateUnreadNotificationsCount() {
+            fetch('/notifications/unread')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('unreadNotificationsCount');
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'inline';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
+        }
+
+        // Обновляем счетчик каждые 30 секунд
+        setInterval(updateUnreadNotificationsCount, 30000);
+        // Обновляем при загрузке страницы
+        document.addEventListener('DOMContentLoaded', updateUnreadNotificationsCount);
     </script>
 </body>
 </html>

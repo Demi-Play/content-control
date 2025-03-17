@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..models import Post, db, User
+from ..models import Post, db, User, UserActivity
 from ..forms import RegistrationForm, LoginForm, ResetPasswordForm
 import logging
 from flask_login import login_user, logout_user, current_user, login_required
 from ..app import login_manager
-from datetime import datetime
+from datetime import datetime, timedelta
+from ..utils.notifications import notify_user_blocked
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -64,46 +65,59 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
         
-        user = User.query.filter_by(username=username).first()
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
         
         if not user:
-            flash('Пользователь с таким именем не найден.', 'error')
-            return redirect(url_for('auth.login'))
-        
-        if not user.is_active():
-            if user.is_blocked:
-                flash('Ваш аккаунт заблокирован администратором.', 'error')
-            else:
-                remaining_time = 300 - (datetime.now() - user.last_failed_login).total_seconds()
-                minutes = int(remaining_time // 60)
-                seconds = int(remaining_time % 60)
-                flash(f'Слишком много неудачных попыток входа. Попробуйте через {minutes} мин. {seconds} сек.', 'error')
-            return redirect(url_for('auth.login'))
+            flash('Пользователь не найден', 'error')
+            return render_template('auth/login.html', form=form)
             
-        if not check_password_hash(user.password_hash, password):
-            user.increment_failed_login()
-            if user.failed_login_attempts >= 3:
-                flash('Слишком много неудачных попыток входа. Попробуйте через 5 минут.', 'error')
-            else:
-                flash('Неверный пароль.', 'error')
-            return redirect(url_for('auth.login'))
+        if not user.is_active:
+            if user.is_blocked:
+                flash('Ваш аккаунт заблокирован администратором', 'error')
+                return render_template('auth/login.html', form=form)
+                
+            if user.blocked_until and user.blocked_until > datetime.now():
+                remaining_time = (user.blocked_until - datetime.now()).seconds // 60
+                flash(f'Ваш аккаунт временно заблокирован. Попробуйте через {remaining_time} минут', 'error')
+                return render_template('auth/login.html', form=form)
         
-        # Сбрасываем счетчик неудачных попыток при успешном входе
-        user.reset_failed_login()
-        login_user(user)
-        flash('Вход выполнен успешно!', 'success')
-        return redirect(url_for('index'))
-    
-    if form.errors:
-        logger.error(f"Login form validation errors: {form.errors}")
-    
-    return render_template('login.html', form=form)
+        if not user.check_password(form.password.data):
+            user.failed_login_attempts += 1
+            user.last_failed_login = datetime.now()
+            
+            if user.failed_login_attempts >= 3:
+                user.blocked_until = datetime.now() + timedelta(minutes=15)
+                # Отправляем уведомление о временной блокировке
+                notify_user_blocked(user.id, 'temporary', duration=15, 
+                                 reason='Превышено количество попыток входа')
+                flash('Превышено количество попыток входа. Аккаунт заблокирован на 15 минут', 'error')
+            else:
+                remaining_attempts = 3 - user.failed_login_attempts
+                flash(f'Неверный пароль. Осталось попыток: {remaining_attempts}', 'error')
+                
+            db.session.commit()
+            return render_template('auth/login.html', form=form)
+            
+        # Успешный вход
+        user.failed_login_attempts = 0
+        user.last_failed_login = None
+        user.blocked_until = None
+        db.session.commit()
+        
+        login_user(user, remember=form.remember_me.data)
+        flash('Вы успешно вошли в систему!', 'success')
+        
+        next_page = request.args.get('next')
+        if not next_page or not next_page.startswith('/'):
+            next_page = url_for('index')
+        return redirect(next_page)
+        
+    return render_template('auth/login.html', form=form)
 
 @auth_bp.route('/logout')
 @login_required

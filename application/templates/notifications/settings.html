@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+
+<div class="container mt-4">
+    <h2 style="color: white;">Настройки уведомлений</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <form id="notificationSettingsForm">
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="emailNotifications" 
+                               name="email_notifications" {% if current_user.email_notifications %}checked{% endif %}>
+                        <label style="color: white;" class="custom-control-label" for="emailNotifications">
+                            Получать уведомления по электронной почте
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary mt-3">Сохранить настройки</button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+document.getElementById('notificationSettingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    fetch('/notifications/settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(new FormData(this))
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Настройки успешно сохранены');
+        }
+    });
+});
+</script>
+{% endblock %} 

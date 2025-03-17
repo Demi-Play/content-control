@@ -1,7 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, flash, request, render_template
 from flask_login import current_user, login_required
 from application.content_analysis import ContentModerator
-from ..models import ModerationLog, db, Comment, Post
+from ..models import ModerationLog, db, Comment, Post, UserActivity
 from ..forms import CommentForm
 
 comments_bp = Blueprint('comments', __name__)
@@ -37,7 +37,17 @@ def add_comment(post_id):
         text=text
     )
     
+    # Логируем действие
+    activity = UserActivity(
+        user_id=current_user.id,
+        action_type='create',
+        target_type='comment',
+        target_id=post_id,
+        details=f'Added comment to post {post_id}'
+    )
+    
     db.session.add(new_comment)
+    db.session.add(activity)
     db.session.commit()
     
     flash("Комментарий добавлен!")
@@ -66,6 +76,17 @@ def edit_comment(post_id, comment_id):
             
         # Если комментарий прошел модерацию
         comment.text = new_text
+        
+        # Логируем действие
+        activity = UserActivity(
+            user_id=current_user.id,
+            action_type='edit',
+            target_type='comment',
+            target_id=comment_id,
+            details=f'Edited comment {comment_id} on post {post_id}'
+        )
+        
+        db.session.add(activity)
         db.session.commit()
         
         flash("Комментарий обновлён!")
@@ -77,6 +98,16 @@ def edit_comment(post_id, comment_id):
 def delete_comment(post_id , comment_id): 
     comment=Comment.query.get_or_404(comment_id) 
 
+    # Логируем действие перед удалением
+    activity = UserActivity(
+        user_id=current_user.id,
+        action_type='delete',
+        target_type='comment',
+        target_id=comment_id,
+        details=f'Deleted comment {comment_id} from post {post_id}'
+    )
+    
+    db.session.add(activity)
     db.session.delete(comment) 
     db.session.commit() 
 
