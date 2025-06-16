@@ -74,12 +74,13 @@ def login():
         
         if not user:
             flash('Пользователь не найден', 'error')
-            return render_template('auth/login.html', form=form)
+            return render_template('login.html', form=form)
             
-        if not user.is_active:
+        # Check if user is blocked or temporarily blocked
+        if not user.is_active():
             if user.is_blocked:
                 flash('Ваш аккаунт заблокирован администратором', 'error')
-                return render_template('auth/login.html', form=form)
+                return render_template('login.html', form=form)
                 
             if user.blocked_until and user.blocked_until > datetime.now():
                 remaining_time = (user.blocked_until - datetime.now()).seconds // 60

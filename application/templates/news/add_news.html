@@ -3,26 +3,90 @@
 {% block title %}Добавить новость{% endblock %}
 
 {% block content %}
-<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-    <h1>Добавить новость</h1>
-    <form method="POST">
+<div class="home-container" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+">
+    <h1 style="font-size: 2rem; color: #333; margin-bottom: 30px; text-align: center; font-weight: 600;">Добавить новость</h1>
+
+    <form method="POST" style="
+        width: 100%;
+        max-width: 600px;
+        background-color: #fff;
+        border-radius: 30px;
+        padding: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    ">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.title.label }}<br>
-            {{ form.title(size=32) }}<br>
+
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.title.label(style='color: #333; font-weight: 500; margin-bottom: 5px; display: block;') }}
+            {{ form.title(size=32, style='
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid #d9d9d9;
+                background-color: #f5f5f5;
+                color: #333;
+                font-size: 1rem;
+            ', placeholder='Введите заголовок новости') }}
             {% for error in form.title.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+            <div class="ant-form-item-explain ant-form-item-explain-error" style="color: #ff4d4f; margin-top: 5px;">
+                {{ error }}
+            </div>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.content.label }}<br>
-            {{ form.content(rows=4, cols=32) }}<br>
+        </div>
+
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.content.label(style='color: #333; font-weight: 500; margin-bottom: 5px; display: block;') }}
+            {{ form.content(rows=4, cols=32, style='
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid #d9d9d9;
+                background-color: #f5f5f5;
+                color: #333;
+                font-size: 1rem;
+                resize: vertical;
+            ', placeholder='Введите содержание новости') }}
             {% for error in form.content.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+            <div class="ant-form-item-explain ant-form-item-explain-error" style="color: #ff4d4f; margin-top: 5px;">
+                {{ error }}
+            </div>
             {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
+        </div>
+
+        <button type="submit" class="ant-btn ant-btn-primary" style="
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 25px 30px; /* Уменьшаем padding */
+        border-radius: 50px;
+        background-color: #FD3536;
+        border-color: #FD3536;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff;
+        transition: background-color 0.3s ease;
+        margin-top: 20px; /* Отступ сверху */
+        ">
+            {{ form.submit.label() }}
+        </button>
     </form>
-    <a href="{{ url_for('news.list_news') }}">Назад к новостям</a>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('news.list_news') }}" style="
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        ">
+            Назад к новостям
+        </a>
+    </div>
 </div>
-{% endblock %} 
+{% endblock %}

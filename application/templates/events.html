@@ -3,24 +3,79 @@
 {% block title %}События{% endblock %}
 
 {% block content %}
-<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-    <h1>События</h1>
+<div class="home-container" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - 40px); /* Учитываем отступы */
+">
+    <h1 style="font-size: 2rem; color: #FD3536; margin-bottom: 30px; text-align: center; font-weight: 600;">События</h1>
+
     {% if current_user.is_authenticated and current_user.role == 'moderator' %}
-    <a href="{{ url_for('events.add_event') }}">Добавить новое событие</a>
+    <a href="{{ url_for('events.add_event') }}" class="ant-btn ant-btn-primary" style="
+        margin-bottom: 20px;
+        padding: 14px 30px;
+        border-radius: 50px;
+        background-color: #FD3536;
+        border-color: #FD3536;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    ">
+        Добавить новое событие
+    </a>
     {% endif %}
-    <div class="feature ant-row" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; border-radius: 8px;">
+
+    <div class="events-list" style="
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    ">
         {% for event in events %}
-        <div class="feature ant-col" style="padding: 10px; margin-bottom: 10px; background-color: #5c5c5c; border-radius: 8px;">
-            <h2 style="color: #ffffff;">{{ event.title }}</h2>
-            <p style="color: #ffffff;">{{ event.description }}</p>
-            <p style="color: #ffffff;">Дата: {{ event.date }}</p>
+        <div class="event-card" style="
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        ">
+            <h2 style="color: #333; margin-bottom: 15px;">{{ event.title }}</h2>
+            <p style="color: #333; margin-bottom: 15px;">{{ event.description }}</p>
+            <p style="color: #333; margin-bottom: 15px;">Дата: {{ event.date.strftime('%d.%m.%Y %H:%M') }}</p>
+
             {% if current_user.is_authenticated and current_user.role == 'moderator' %}
-            <a href="{{ url_for('events.edit_event', event_id=event.id) }}">Редактировать</a>
-            <form action="{{ url_for('events.delete_event', event_id=event.id) }}" method="post" style="display:inline;">
-                <input type="submit" value="Удалить">
-            </form>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_for('events.edit_event', event_id=event.id) }}" class="ant-btn ant-btn-default" style="
+                    padding: 5px 16px;
+                    border-radius: 50px;
+                    background-color: #f5f5f5;
+                    border-color: #d9d9d9;
+                    color: #333;
+                    font-size: 14px;
+                    font-weight: 500;
+                ">
+                    Редактировать
+                </a>
+                <form action="{{ url_for('events.delete_event', event_id=event.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="ant-btn ant-btn-danger" style="
+                        padding: 5px 16px;
+                        border-radius: 50px;
+                        background-color: #FD3536;
+                        border-color: #FD3536;
+                        color: #fff;
+                        font-size: 14px;
+                        font-weight: 500;
+                    ">
+                        Удалить
+                    </button>
+                </form>
+            </div>
             {% endif %}
-        </li>
         </div>
         {% endfor %}
     </div>

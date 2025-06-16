@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-    <h1 style="color: #fff; margin-bottom: 30px;">Управление новостями</h1>
+    <h1 style="color: #333; margin-bottom: 30px; font-weight: 600;">Управление новостями</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
                 <div class="ant-alert ant-alert-{{ category }}" style="margin-bottom: 20px; padding: 10px; border-radius: 4px; background-color: 
                     {%- if category == 'success' -%}#52c41a
-                    {%- elif category == 'error' -%}#ff4d4f
-                    {%- else -%}#1890ff{% endif %};">
+                    {%- elif category == 'error' -%}#FD3536
+                    {%- else -%}#1890ff{% endif %}; color: #fff;">
                     {{ message }}
                 </div>
             {% endfor %}
@@ -25,29 +25,29 @@
         </a>
     </div>
 
-    <div class="news-table" style="background-color: #333333; padding: 20px; border-radius: 8px;">
+    <div class="news-table" style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">ID</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Заголовок</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Дата создания</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #444; color: #fff;">Действия</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">ID</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Заголовок</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Дата создания</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Действия</th>
                 </tr>
             </thead>
             <tbody>
                 {% for news in news_items %}
                 <tr>
-                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #fff;">
+                    <td style="padding: 12px; border-bottom: 1px solid #eee; color: #333;">
                         {{ news.id }}
                     </td>
-                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #fff;">
+                    <td style="padding: 12px; border-bottom: 1px solid #eee; color: #333;">
                         {{ news.title }}
                     </td>
-                    <td style="padding: 12px; border-bottom: 1px solid #444; color: #888;">
+                    <td style="padding: 12px; border-bottom: 1px solid #eee; color: #777;">
                         {{ news.created_at.strftime('%d.%m.%Y %H:%M') }}
                     </td>
-                    <td style="padding: 12px; border-bottom: 1px solid #444;">
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">
                         <div style="display: flex; gap: 10px;">
                             <a href="{{ url_for('news.edit_news', news_id=news.id) }}" 
                                class="ant-btn ant-btn-primary" style="font-size: 14px;">
@@ -78,30 +78,39 @@
 
 <style>
     .ant-btn {
-        padding: 8px 16px;
-        border-radius: 4px;
+        padding: 5px 16px;
+        border-radius: 30px;
         cursor: pointer;
         transition: all 0.3s;
         border: none;
+        font-weight: 500;
     }
     .ant-btn-primary {
-        background-color: #1890ff;
+        background-color: #FD3536;
         color: #fff;
+        padding: 6px 16px;
+    }
+    .ant-btn-primary:hover {
+        background-color: #FD3536;
     }
     .ant-btn-danger {
-        background-color: #ff4d4f;
+        background-color: #FD3536;
         color: #fff;
+    }
+    .ant-btn-danger:hover {
+        background-color: #e62e2e;
     }
     .ant-btn-default {
-        background-color: #1f1f1f;
-        border: 1px solid #5c5c5c;
-        color: #fff;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        color: #333;
     }
-    .ant-btn:hover {
-        opacity: 0.8;
+    .ant-btn-default:hover {
+        background-color: #f9f9f9;
+        border-color: #ccc;
     }
     .ant-alert {
         color: #fff;
     }
 </style>
-{% endblock %} 
+{% endblock %}

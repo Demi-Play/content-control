@@ -27,13 +27,16 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
         
     def is_active(self):
+        # First check if user is blocked
         if self.is_blocked:
             return False
+            
+        # Then check for temporary block due to failed login attempts
         if self.failed_login_attempts >= 3:
             if self.last_failed_login and (datetime.now() - self.last_failed_login).total_seconds() < 300:  # 5 минут
                 return False
             else:
-                # Сбрасываем счетчик после 5 минут
+                # Reset counter after 5 minutes
                 self.failed_login_attempts = 0
                 return True
         return True

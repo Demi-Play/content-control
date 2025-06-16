@@ -22,6 +22,9 @@ def add_event():
             date=form.date.data
         )
         
+        db.session.add(event)
+        db.session.flush()  # Получаем id до коммита
+        
         # Логируем действие
         activity = UserActivity(
             user_id=current_user.id,
@@ -31,7 +34,6 @@ def add_event():
             details=f'Created new event: {event.title}'
         )
         
-        db.session.add(event)
         db.session.add(activity)
         db.session.commit()
         

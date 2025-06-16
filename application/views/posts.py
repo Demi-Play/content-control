@@ -40,16 +40,27 @@ def new_post():
         
         if form.file.data:
             file_path = secure_filename(form.file.data.filename)  # Безопасное имя файла
+            file_extension = file_path.rsplit('.', 1)[1].lower() if '.' in file_path else ''
             
             new_filename = transliterate_filename(file_path)
             # Сохраняем файл в папку uploads
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
+            
+            # Определяем тип файла
+            if file_extension in ['jpg', 'jpeg', 'png', 'gif']:
+                file_type = 'image'
+            elif file_extension in ['mp4', 'webm']:
+                file_type = 'video'
+            elif file_extension in ['mp3', 'wav']:
+                file_type = 'audio'
+            else:
+                file_type = 'none'
         
         new_post = Post(
             user_id=current_user.id, 
             content_text=content_text,
             file_path=new_filename,
-            file_type='image' if new_filename else 'none',
+            file_type=file_type if new_filename else 'none',
             is_active=False  # Пост неактивен до модерации
         )
         
@@ -115,11 +126,22 @@ def edit_post(post_id):
         # Обработка загрузки нового файла (если есть)
         if form.file.data:
             file_path_new_file_name = secure_filename(form.file.data.filename)
+            file_extension = file_path_new_file_name.rsplit('.', 1)[1].lower() if '.' in file_path_new_file_name else ''
+            
             new_filename = transliterate_filename(file_path_new_file_name)
             
             form.file.data.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
             post.file_path = new_filename
-            post.file_type = 'image'
+            
+            # Определяем тип файла
+            if file_extension in ['jpg', 'jpeg', 'png', 'gif']:
+                post.file_type = 'image'
+            elif file_extension in ['mp4', 'webm']:
+                post.file_type = 'video'
+            elif file_extension in ['mp3', 'wav']:
+                post.file_type = 'audio'
+            else:
+                post.file_type = 'none'
         
         # Логируем редактирование поста
         activity = UserActivity(

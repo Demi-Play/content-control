@@ -20,8 +20,9 @@ def add_news():
             content=form.content.data
         )
         db.session.add(news)
+        db.session.commit()  # Сначала фиксируем новость
         
-        # Логируем создание новости
+        # Теперь news.id доступен
         activity = UserActivity(
             user_id=current_user.id,
             action_type='create',
@@ -30,8 +31,8 @@ def add_news():
             details=f'Created news: {news.title}'
         )
         db.session.add(activity)
-        
         db.session.commit()
+        
         flash('Новость успешно добавлена!', 'success')
         return redirect(url_for('news.list_news'))
     return render_template('news/add_news.html', form=form)
@@ -47,6 +48,8 @@ def edit_news(news_id):
         news.title = form.title.data
         news.content = form.content.data
         
+        db.session.commit()  # Сначала фиксируем изменения
+        
         # Логируем редактирование новости
         activity = UserActivity(
             user_id=current_user.id,
@@ -56,8 +59,8 @@ def edit_news(news_id):
             details=f'Edited news: {old_title} -> {news.title}'
         )
         db.session.add(activity)
-        
         db.session.commit()
+        
         flash('Новость успешно обновлена!', 'success')
         return redirect(url_for('news.list_news'))
     
@@ -82,4 +85,4 @@ def delete_news(news_id):
     db.session.delete(news)
     db.session.commit()
     flash('Новость успешно удалена!', 'success')
-    return redirect(url_for('news.list_news')) 
+    return redirect(url_for('news.list_news'))

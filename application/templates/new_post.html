@@ -3,30 +3,128 @@
 {% block title %}Новая публикация{% endblock %}
 
 {% block content %}
-<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+<div class="home-container" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - 40px); /* Учитываем отступы */
+">
+    <h1 style="font-size: 2rem; color: #333; margin-bottom: 30px; text-align: center; font-weight: 600;">Создайте публикацию</h1>
 
-<h1>Создайте публикацию</h1>
+    <form method="POST" enctype="multipart/form-data" style="
+        width: 100%;
+        max-width: 600px;
+        background-color: #fff;
+        border-radius: 30px;
+        padding: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    ">
+        {{ form.hidden_tag() }}
 
-<form method="POST" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.content_text.label(style='color: #333; font-weight: 500; margin-bottom: 5px; display: block;') }}
+            {{ form.content_text(class='ant-textarea', style='
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid #d9d9d9;
+                background-color: #f5f5f5;
+                color: #333;
+                font-size: 1rem;
+                resize: vertical;
+            ', rows=5, placeholder='Напишите текст публикации') }}
+            {% for error in form.content_text.errors %}
+            <div class="ant-form-item-explain ant-form-item-explain-error" style="color: #ff4d4f; margin-top: 5px;">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
 
-    <div class="ant-form-item">
-        {{ form.content_text.label }}<br>{{ form.content_text(class='ant-textarea', cols=30, rows=5) }}
-    </div>
+        <div class="ant-form-item" style="margin-bottom: 20px;">
+            {{ form.file.label(style='color: #333; font-weight: 500; margin-bottom: 5px; display: block;') }}
+            <div style="position: relative;">
+                {{ form.file(style='
+                    width: 100%;
+                    padding: 12px;
+                    border-radius: 8px;
+                    border: 1px solid #d9d9d9;
+                    background-color: #f5f5f5;
+                    color: #333;
+                    font-size: 1rem;
+                    opacity: 0;
+                    position: absolute;
+                    z-index: 1;
+                    cursor: pointer;
+                ') }}
+                <div style="
+                    width: 100%;
+                    padding: 12px;
+                    border-radius: 8px;
+                    border: 1px solid #d9d9d9;
+                    background-color: #f5f5f5;
+                    color: #333;
+                    font-size: 1rem;
+                    text-align: center;
+                    cursor: pointer;
+                ">
+                    <span id="file-name" style="color: #777;">Выберите файл</span>
+                </div>
+            </div>
+            {% for error in form.file.errors %}
+            <div class="ant-form-item-explain ant-form-item-explain-error" style="color: #ff4d4f; margin-top: 5px;">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
 
-    <div class="ant-form-item">
-        {{ form.file.label }}<br>{{ form.file() }}
-    </div>
-
-    <button type="submit" class="ant-btn ant-btn-primary">{{ form.submit.label }}</button>
-</form>
-
-<style>
-    .ant-form-item {
+        <button type="submit" class="ant-btn ant-btn-primary" style="
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 25px 30px; /* Уменьшаем padding */
+        border-radius: 50px;
+        background-color: #FD3536;
+        border-color: #FD3536;
+        font-size: 1rem;
+        font-weight: 500;
         color: #fff;
-    }
-</style>
+        transition: background-color 0.3s ease;
+        margin-top: 20px; /* Отступ сверху */
+    ">
+        {{ form.submit.label() }}
+    </button>
+    
+    </form>
 
-<a href="{{ url_for('posts.list_posts') }}">Назад к постам</a>
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('posts.list_posts') }}" style="
+            color: #333; /* Темный цвет текста */
+            text-decoration: none;
+            font-weight: 500;
+        ">
+            Назад к постам
+        </a>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.querySelector('input[type="file"]');
+        const fileNameSpan = document.getElementById('file-name');
+
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                fileNameSpan.textContent = fileInput.files[0].name;
+                fileNameSpan.style.color = '#333'; // Изменение цвета текста на темный
+            } else {
+                fileNameSpan.textContent = 'Выберите файл';
+                fileNameSpan.style.color = '#777'; // Возвращение серого цвета
+            }
+        });
+    });
+</script>
 {% endblock %}

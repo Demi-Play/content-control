@@ -1,29 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+<div class="home-container" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - 40px); /* Учитываем отступы -->
+">
+    <h1 style="font-size: 2rem; color: #333; margin-bottom: 30px; text-align: center; font-weight: 600;">Настройки уведомлений</h1>
 
-<div class="container mt-4">
-    <h2 style="color: white;">Настройки уведомлений</h2>
-    
-    <div class="card">
-        <div class="card-body">
-            <form id="notificationSettingsForm">
-                <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="emailNotifications" 
-                               name="email_notifications" {% if current_user.email_notifications %}checked{% endif %}>
-                        <label style="color: white;" class="custom-control-label" for="emailNotifications">
-                            Получать уведомления по электронной почте
-                        </label>
-                    </div>
+    <div class="settings-card" style="
+        width: 100%;
+        max-width: 800px;
+        background-color: #fff;
+        border-radius: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    ">
+        <form id="notificationSettingsForm">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="emailNotifications" 
+                           name="email_notifications" {% if current_user.email_notifications %}checked{% endif %}>
+                    <label style="color: #333; font-weight: 500;" class="custom-control-label" for="emailNotifications">
+                        Получать уведомления по электронной почте
+                    </label>
                 </div>
-                
-                <button type="submit" class="btn btn-primary mt-3">Сохранить настройки</button>
-            </form>
-        </div>
+            </div>
+            
+            <button type="submit" class="ant-btn ant-btn-primary" style="
+            width: 100%;
+            padding: 14px;
+            border-radius: 50px;
+            background-color: #FD3536;
+            border-color: #FD3536;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            Сохранить настройки
+        </button>        
+        </form>
     </div>
-</div>
 </div>
 
 <script>
@@ -45,4 +70,4 @@ document.getElementById('notificationSettingsForm').addEventListener('submit', f
     });
 });
 </script>
-{% endblock %} 
+{% endblock %}

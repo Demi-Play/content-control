@@ -18,15 +18,45 @@ def list_users():
 @moderator_required('admin')
 def edit_user(user_id):
     user = User.query.get_or_404(user_id)
-    form = UserEditForm(obj=user)  # Заполняем форму данными пользователя
+    
+    if request.method == 'GET':
+        form = UserEditForm(obj=user)
+    else:
+        form = UserEditForm()
 
     if form.validate_on_submit():
-        user.username = form.username.data
-        user.email = form.email.data
-        user.role = form.role.data  # Предполагаем, что у вас есть поле для роли в форме
-        db.session.commit()
-        flash("Пользователь обновлён!")
-        return redirect(url_for('admin.list_users'))
+        try:
+            # Update user data
+            user.username = form.username.data
+            user.email = form.email.data
+            user.role = form.role.data
+            
+            # Update password if provided
+            if form.password.data:
+                user.set_password(form.password.data)
+            
+            # Log the activity
+            activity = UserActivity(
+                user_id=current_user.id,
+                action_type='edit',
+                target_type='user',
+                target_id=user.id,
+                details=f'User {user.username} updated by admin'
+            )
+            
+            db.session.add(activity)
+            db.session.commit()
+            
+            flash('Пользователь успешно обновлен!', 'success')
+            return redirect(url_for('admin.list_users'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ошибка при обновлении пользователя: {str(e)}', 'error')
+            print(f"Error updating user: {str(e)}")  # Для отладки
+    else:
+        if form.errors:
+            print(f"Form validation errors: {form.errors}")  # Для отладки
+            flash('Ошибка валидации формы', 'error')
 
     return render_template('admin/edit_user.html', form=form, user=user)
 

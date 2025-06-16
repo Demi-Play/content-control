@@ -3,62 +3,119 @@
 {% block title %}Управление пользователями{% endblock %}
 
 {% block content %}
-<div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-    <h1 style="color: #fff; margin-bottom: 30px;">Список пользователей</h1>
+<div class="home-container" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+">
+    <h1 style="font-size: 2rem; color: #333; margin-bottom: 30px; text-align: center; font-weight: 600;">Список пользователей</h1>
     
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="ant-alert ant-alert-{{ category }}" style="margin-bottom: 20px;">
+                <div class="ant-alert ant-alert-{{ category }}" style="
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    border-radius: 8px;
+                    background-color: {% if category == 'error' %}#ff4d4f{% else %}#1890ff{% endif %};
+                    color: #fff;
+                    text-align: center;
+                ">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    <table class="ant-table" style="width: 100%; margin-bottom: 20px;">
+    <table class="ant-table" style="
+        width: 100%;
+        margin-bottom: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-collapse: collapse;
+    ">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Имя пользователя</th>
-                <th>Email</th>
-                <th>Роль</th>
-                <th>Статус</th>
-                <th>Действия</th>
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">ID</th>
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Имя пользователя</th>
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Email</th>
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Роль</th>
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Статус</th>
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #eee; color: #555; font-weight: 500;">Действия</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td>
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 12px; color: #333;">{{ user.id }}</td>
+                <td style="padding: 12px; color: #333;">{{ user.username }}</td>
+                <td style="padding: 12px; color: #333;">{{ user.email }}</td>
+                <td style="padding: 12px; color: #333;">{{ user.role }}</td>
+                <td style="padding: 12px;">
                     {% if user.is_blocked %}
-                        <span style="color: #ff4d4f;">Заблокирован</span>
+                        <span style="color: #ff4d4f; font-weight: 500;">Заблокирован</span>
                     {% elif user.failed_login_attempts >= 3 %}
-                        <span style="color: #faad14;">Временная блокировка</span>
+                        <span style="color: #faad14; font-weight: 500;">Временная блокировка</span>
                     {% else %}
-                        <span style="color: #52c41a;">Активен</span>
+                        <span style="color: #52c41a; font-weight: 500;">Активен</span>
                     {% endif %}
                 </td>
-                <td>
+                <td style="padding: 12px;">
                     <div style="display: flex; gap: 10px;">
-                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="ant-btn ant-btn-link">
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="ant-btn ant-btn-link" style="
+                            padding: 4px 16px;
+                            border-radius: 50px;
+                            background-color: #1890ff;
+                            border-color: #1890ff;
+                            color: #fff;
+                            font-size: 0.9rem;
+                            font-weight: 500;
+                            text-decoration: none;
+                        ">
                             Редактировать
                         </a>
                         {% if user.is_blocked %}
                             <form action="{{ url_for('admin.unblock_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="ant-btn ant-btn-success">Разблокировать</button>
+                                <button type="submit" class="ant-btn ant-btn-success" style="
+                                    padding: 4px 16px;
+                                    border-radius: 50px;
+                                    background-color: #52c41a;
+                                    border-color: #52c41a;
+                                    color: #fff;
+                                    font-size: 0.9rem;
+                                    font-weight: 500;
+                                ">
+                                    Разблокировать
+                                </button>
                             </form>
                         {% else %}
                             <form action="{{ url_for('admin.block_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="ant-btn ant-btn-danger">Заблокировать</button>
+                                <button type="submit" class="ant-btn ant-btn-danger" style="
+                                    padding: 4px 16px;
+                                    border-radius: 50px;
+                                    background-color: #FD3536;
+                                    border-color: #FD3536;
+                                    color: #fff;
+                                    font-size: 0.9rem;
+                                    font-weight: 500;
+                                ">
+                                    Заблокировать
+                                </button>
                             </form>
                         {% endif %}
                         <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
+                            <button type="submit" class="ant-btn ant-btn-danger" style="
+                                padding: 4px 16px;
+                                border-radius: 50px;
+                                background-color: #FD3536;
+                                border-color: #FD3536;
+                                color: #fff;
+                                font-size: 0.9rem;
+                                font-weight: 500;
+                            ">
+                                Удалить
+                            </button>
                         </form>
                     </div>
                 </td>
@@ -67,37 +124,19 @@
         </tbody>
     </table>
 
-    <style>
-        .ant-table {
-            background-color: #333333;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .ant-table th {
-            background-color: #5c5c5c;
-            color: #fff;
-            padding: 12px;
-            text-align: left;
-        }
-        .ant-table td {
-            background-color: #333333;
-            color: #fff;
-            padding: 12px;
-            border-top: 1px solid #5c5c5c;
-        }
-        .ant-btn-success {
-            background-color: #52c41a;
-            border-color: #52c41a;
-            color: #fff;
-        }
-        .ant-btn-success:hover {
-            background-color: #73d13d;
-            border-color: #73d13d;
-        }
-    </style>
-
     <div style="text-align: center; margin-top: 20px;">
-        <a href="{{ url_for('index') }}" class="ant-btn ant-btn-default">Назад на главную</a>
+        <a href="{{ url_for('index') }}" class="ant-btn ant-btn-default" style="
+            padding: 10px 20px;
+            border-radius: 50px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+        ">
+            Назад на главную
+        </a>
     </div>
 </div>
 {% endblock %}

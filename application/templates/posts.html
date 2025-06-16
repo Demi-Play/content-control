@@ -5,89 +5,145 @@
 {% endblock %}
 
 {% block content %}
-  <div class="home-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-    <h1>Публикации</h1>
-    <a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary" style="margin-bottom: 20px;">Создать новый пост</a>
-    <div class="site-card-wrapper" style="padding: 20px; display: flex; flex-wrap: wrap; justify-content: center;">
-      <div class="ant-row" style="display: flex; flex-wrap: wrap;">
-        {% for post in posts %}
-          <div class="ant-col ant-col-8" style="padding: 10px; border-radius: 10px;">
-            <div class="ant-card" style="width: 100%; border-radius: 120px;">
-              <div class="ant-card-body" style="background-color: #5c5c5c; border-radius: 10px;">
-                <h3 style="color: #ffffff;">Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}" style="color: #ffffff;">{{ post.author.username }}</a></h3>
-                <p style="color: #ffffff;">{{ post.content_text }}</p>
-                {% if post.file_path %}
-                  <div class="media-container">
-                    {% if post.file_type == 'image' %}
-                      <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="width: 100%; height: auto;" />
-                    {% elif post.file_type == 'video' %}
-                      <video controls style="width: 100%;">
-                        <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4" />Ваш браузер не поддерживает видео.
-                      </video>
-                    {% endif %}
-                  </div>
-                {% endif %}
-                <div style="margin-top: 10px;">
-                  <!-- Счетчик лайков -->
-                  <form action="{{ url_for('likes.like_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="ant-btn ant-btn-link" style="color: #ffffff;">Лайки 👍 {{ post.likes|length }}</button>
-                  </form>
+<div class="home-container" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - 40px); /* Учитываем отступы */
+">
+    <h1 style="font-size: 2rem; color: #FD3536; margin-bottom: 30px; text-align: center; font-weight: 600;">Публикации</h1>
+    <a href="{{ url_for('posts.new_post') }}" class="ant-btn ant-btn-primary" style="
+        margin-bottom: 20px;
+        padding: 14px 30px;
+        border-radius: 50px;
+        background-color: #FD3536;
+        border-color: #FD3536;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    ">
+        Создать новый пост
+    </a>
 
-                  <!-- Счетчик комментариев -->
-                  <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link" style="color: #ffffff;">Комментарии {{ post.comments|length }} 💬</a>
-                </div>
-                <div style="margin-top: 10px;">
-                  {% if post.user_id == current_user.id %}
-                    <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link">Редактировать</a>
-                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
-                      <button type="submit" class="ant-btn ant-btn-danger">Удалить</button>
-                    </form>
-                  {% endif %}
-                </div>
-              </div> <!-- Закрывающий тег для ant-card-body -->
-            </div> <!-- Закрывающий тег для ant-card -->
-          </div> <!-- Закрывающий тег для ant-col -->
-        {% endfor %}
-        {% if posts|length == 0 %}
-          <p>Нет доступных постов.</p>
-        {% endif %}
-      </div> <!-- Закрывающий тег для ant-row -->
-    </div>
-  </div>
+    <div class="site-card-wrapper" style="
+        width: 100%;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    ">
+        <div class="ant-row" style="display: flex; flex-wrap: wrap; gap: 20px;">
+            {% for post in posts %}
+                <div class="ant-col" style="
+                    flex: 1 1 300px;
+                    max-width: 360px;
+                    padding: 10px;
+                ">
+                    <div class="ant-card" style="
+                        width: 100%;
+                        border-radius: 30px;
+                        background-color: #fff;
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                    ">
+                        <div class="ant-card-body" style="padding: 20px;">
+                            <h3 style="color: #333; margin-bottom: 15px;">
+                                Автор: <a href="{{ url_for('auth.profile', user_id=post.user_id) }}" style="color: #1890ff;">{{ post.author.username }}</a>
+                            </h3>
+                            <p style="color: #333; margin-bottom: 15px;">{{ post.content_text }}</p>
 
-  <style>
+                            {% if post.file_path %}
+                                <div class="media-container" style="margin-bottom: 15px;">
+                                    {% if post.file_type == 'image' %}
+                                        <img src="{{ url_for('static', filename='uploads/' + post.file_path) }}" alt="Post Image" style="
+                                            width: 100%;
+                                            height: auto;
+                                            border-radius: 8px;
+                                        " />
+                                    {% elif post.file_type == 'video' %}
+                                        <video controls style="width: 100%; border-radius: 8px;">
+                                            <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="video/mp4" />
+                                            Ваш браузер не поддерживает видео.
+                                        </video>
+                                    {% elif post.file_type == 'audio' %}
+                                        <audio controls style="width: 100%; border-radius: 8px;">
+                                            <source src="{{ url_for('static', filename='uploads/' + post.file_path) }}" type="audio/mpeg" />
+                                            Ваш браузер не поддерживает аудио.
+                                        </audio>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <div style="margin-top: 10px;">
+                                <!-- Счетчик лайков -->
+                                <form action="{{ url_for('likes.like_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="ant-btn ant-btn-link" style="color: #333;">Лайки 👍 {{ post.likes|length }}</button>
+                                </form>
+
+                                <!-- Счетчик комментариев -->
+                                <a href="{{ url_for('comments.list_comments', post_id=post.id) }}" class="ant-btn ant-btn-link" style="color: #333;">Комментарии {{ post.comments|length }} 💬</a>
+                            </div>
+
+                            {% if post.user_id == current_user.id %}
+                                <div style="margin-top: 15px;">
+                                    <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="ant-btn ant-btn-link" style="color: #1890ff;">Редактировать</a>
+                                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="ant-btn ant-btn-danger" style="
+                                            background-color: #ff4d4f;
+                                            border-color: #ff4d4f;
+                                            color: #fff;
+                                            padding: 5px 10px;
+                                            border-radius: 50px;
+                                        ">
+                                            Удалить
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div> <!-- Закрывающий тег для ant-card-body -->
+                    </div> <!-- Закрывающий тег для ant-card -->
+                </div> <!-- Закрывающий тег для ant-col -->
+            {% endfor %}
+
+            {% if posts|length == 0 %}
+                <p style="color: #333; text-align: center;">Нет доступных постов.</p>
+            {% endif %}
+        </div> <!-- Закрывающий тег для ant-row -->
+    </div> <!-- Закрывающий тег для site-card-wrapper -->
+</div> <!-- Закрывающий тег для home-container -->
+
+<style>
     .media-container {
-      overflow: hidden;
-      position: relative;
-      width: 100%;
-      height: auto;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: auto;
     }
-    img,
-    video {
-      display: block;
-      margin: auto;
-    }
-    .ant-card {
-      min-width: 360px;
-    }
-    .ant-row {
-      
-      overflow-y: hidden;
 
-      
+    .ant-btn-link {
+        background: none;
+        border: none;
+        color: #1890ff;
+        cursor: pointer;
     }
-    .ant-col {
-      display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 50px;
+
+    .ant-btn-link:hover {
+        text-decoration: underline;
     }
-    .home-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+
+    .ant-btn-danger {
+        background-color: #ff4d4f;
+        border-color: #ff4d4f;
+        color: #fff;
     }
-  </style>
+
+    .ant-btn-danger:hover {
+        background-color: #e62e2e;
+        border-color: #e62e2e;
+    }
+</style>
 {% endblock %}
